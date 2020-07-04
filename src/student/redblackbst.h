@@ -7,31 +7,28 @@
 #define TD234 1
 #define BU23 2
 
-struct bstNodeValue
+struct BstNodeValue
 {
   uint64_t version;
   uint64_t field;
 };
 
-struct bstNodeKey
-{
-  uint64_t key;
-};
+typedef uint64_t BstNodeKey;
 
-struct bstNode
+struct BstNode
 {
-  uint64_t key;
+  BstNodeKey key;
   uint64_t value;
-  struct bstNode *left;
-  struct bstNode *right;
+  struct BstNode *left;
+  struct BstNode *right;
   bool color;
   int N;
   int height;
 };
 
-typedef bstNode redBlackBSTNode;
+typedef BstNode RedBlackBSTNode;
 
-redBlackBSTNode * test();
+RedBlackBSTNode *test();
 int ipl();
 int size();
 bool check();
@@ -41,40 +38,43 @@ int height();
 int heightB();
 void deleteNodeMax();
 void deleteNodeMin();
-uint64_t max();
-uint64_t min();
+BstNodeKey max();
+BstNodeKey min();
 
-uint64_t get(uint64_t key);
-void put(uint64_t key, uint64_t value);
-void deleteNode(uint64_t key);
-bool contains(uint64_t key);
+uint64_t get(BstNodeKey key);
+void put(BstNodeKey key, uint64_t value);
+void deleteNode(BstNodeKey key);
+bool contains(BstNodeKey key);
+
+bool eq(BstNodeKey a, BstNodeKey b);
+bool less(BstNodeKey a, BstNodeKey b);
 
 bool isBST();
-bool isBST(redBlackBSTNode *node, uint64_t min, uint64_t max);
+bool isBST(RedBlackBSTNode *node, uint64_t min, uint64_t max);
 bool is234();
-bool is234(redBlackBSTNode *node);
+bool is234(RedBlackBSTNode *node);
 bool isBalanced();
-bool isBalanced(redBlackBSTNode *node, int black);
-bool isRed(redBlackBSTNode *node);
+bool isBalanced(RedBlackBSTNode *node, int black);
+bool isRed(RedBlackBSTNode *node);
 
-int ipl(redBlackBSTNode *node);
-int sizeRed(redBlackBSTNode *node);
+int ipl(RedBlackBSTNode *node);
+int sizeRed(RedBlackBSTNode *node);
 
-int height(redBlackBSTNode *node);
-int rootRank(redBlackBSTNode *root);
-int size(redBlackBSTNode *node);
-int sizeRedBlackBST(redBlackBSTNode *node);
-void colorFlip(redBlackBSTNode *node);
-uint64_t max(redBlackBSTNode *node);
-uint64_t min(redBlackBSTNode *node);
-uint64_t get(redBlackBSTNode *node, uint64_t key);
-redBlackBSTNode *insert(redBlackBSTNode *node, uint64_t key, uint64_t value);
-redBlackBSTNode *deleteNodeMin(redBlackBSTNode *node);
-redBlackBSTNode *deleteNodeMax(redBlackBSTNode *node);
-redBlackBSTNode *deleteNode(redBlackBSTNode *node, uint64_t key);
-redBlackBSTNode *rotateLeft(redBlackBSTNode *node);
-redBlackBSTNode *rotateRight(redBlackBSTNode *node);
-redBlackBSTNode *moveRedLeft(redBlackBSTNode *node);
-redBlackBSTNode *moveRedRight(redBlackBSTNode *node);
-redBlackBSTNode *fixUp(redBlackBSTNode *node);
-redBlackBSTNode *setN(redBlackBSTNode *node);
+int height(RedBlackBSTNode *node);
+int rootRank(RedBlackBSTNode *root);
+int size(RedBlackBSTNode *node);
+int sizeRedBlackBST(RedBlackBSTNode *node);
+void colorFlip(RedBlackBSTNode *node);
+BstNodeKey max(RedBlackBSTNode *node);
+BstNodeKey min(RedBlackBSTNode *node);
+uint64_t get(RedBlackBSTNode *node, BstNodeKey key);
+RedBlackBSTNode *insert(RedBlackBSTNode *node, BstNodeKey key, uint64_t value);
+RedBlackBSTNode *deleteNodeMin(RedBlackBSTNode *node);
+RedBlackBSTNode *deleteNodeMax(RedBlackBSTNode *node);
+RedBlackBSTNode *deleteNode(RedBlackBSTNode *node, BstNodeKey key);
+RedBlackBSTNode *rotateLeft(RedBlackBSTNode *node);
+RedBlackBSTNode *rotateRight(RedBlackBSTNode *node);
+RedBlackBSTNode *moveRedLeft(RedBlackBSTNode *node);
+RedBlackBSTNode *moveRedRight(RedBlackBSTNode *node);
+RedBlackBSTNode *fixUp(RedBlackBSTNode *node);
+RedBlackBSTNode *setN(RedBlackBSTNode *node);

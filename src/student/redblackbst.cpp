@@ -2,7 +2,7 @@
 #include "redblackbst.h"
 #include <stdlib.h>
 
-redBlackBSTNode *root;
+RedBlackBSTNode *root;
 int species = TD234;
 int heightBLACK;
 
@@ -10,14 +10,14 @@ int size()
 {
   return size(root);
 }
-int size(redBlackBSTNode *node)
+int size(RedBlackBSTNode *node)
 {
   if (node == NULL)
     return 0;
   else
     return node->N;
 }
-int sizeRedBlackBST(redBlackBSTNode *node)
+int sizeRedBlackBST(RedBlackBSTNode *node)
 {
   if (node == NULL)
     return 0;
@@ -31,7 +31,7 @@ int rootRank()
   else
     return size(root->left);
 }
-int rootRank(redBlackBSTNode *node)
+int rootRank(RedBlackBSTNode *node)
 {
   if (node == NULL)
     return 0;
@@ -42,54 +42,54 @@ int height()
 {
   return height(root);
 }
-int height(redBlackBSTNode *node)
+int height(RedBlackBSTNode *node)
 {
   if (node == NULL)
     return 0;
   else
     return node->height;
 }
-bool contains(uint64_t key)
+bool contains(BstNodeKey key)
 {
   return (get(root, key) != 0);
 }
-uint64_t get(uint64_t key)
+uint64_t get(BstNodeKey key)
 {
   return get(root, key);
 }
-uint64_t get(redBlackBSTNode *node, uint64_t key)
+uint64_t get(RedBlackBSTNode *node, BstNodeKey key)
 {
   if (node == NULL)
     return 0;
-  if (key == node->key)
+  if (eq(key, node->key))
     return node->value;
-  else if (key < node->key)
+  else if (less(key, node->key))
     return get(node->left, key);
   else
     return get(node->right, key);
 }
-uint64_t min()
+BstNodeKey min()
 {
   if (root == NULL)
     return 0;
   else
     return min(root);
 }
-uint64_t max()
+BstNodeKey max()
 {
   if (root == NULL)
     return 0;
   else
     return max(root);
 }
-uint64_t min(redBlackBSTNode *node)
+BstNodeKey min(RedBlackBSTNode *node)
 {
   if (node->left == NULL)
     return node->key;
   else
     return min(node->left);
 }
-uint64_t max(redBlackBSTNode *node)
+BstNodeKey max(RedBlackBSTNode *node)
 {
   if (node->right == NULL)
     return node->key;
@@ -102,7 +102,7 @@ int heightB()
   return heightBLACK;
 }
 
-void put(uint64_t key, uint64_t value)
+void put(BstNodeKey key, uint64_t value)
 {
   root = insert(root, key, value);
   if (isRed(root))
@@ -110,11 +110,11 @@ void put(uint64_t key, uint64_t value)
   root->color = BLACK;
 }
 
-redBlackBSTNode *insert(redBlackBSTNode *node, uint64_t key, uint64_t value)
+RedBlackBSTNode *insert(RedBlackBSTNode *node, BstNodeKey key, uint64_t value)
 {
   if (node == NULL)
   {
-    redBlackBSTNode *nodeTemp = (redBlackBSTNode *)malloc(sizeof(redBlackBSTNode));
+    RedBlackBSTNode *nodeTemp = (RedBlackBSTNode *)malloc(sizeof(RedBlackBSTNode));
     nodeTemp->key = key;
     nodeTemp->value = value;
     nodeTemp->color = RED;
@@ -127,9 +127,9 @@ redBlackBSTNode *insert(redBlackBSTNode *node, uint64_t key, uint64_t value)
     if (isRed(node->left) && isRed(node->right))
       colorFlip(node);
 
-  if (key == node->key)
+  if (eq(key, node->key))
     node->value = value;
-  else if (key < node->key)
+  else if (less(key, node->key))
     node->left = insert(node->left, key, value);
   else
     node->right = insert(node->right, key, value);
@@ -156,7 +156,7 @@ void deleteNodeMin()
   root->color = BLACK;
 }
 
-redBlackBSTNode *deleteNodeMin(redBlackBSTNode *node)
+RedBlackBSTNode *deleteNodeMin(RedBlackBSTNode *node)
 {
   if (node->left == NULL)
     return NULL;
@@ -174,8 +174,15 @@ void deleteNodeMax()
   root = deleteNodeMax(root);
   root->color = BLACK;
 }
-
-redBlackBSTNode *deleteNodeMax(redBlackBSTNode *node)
+bool less(BstNodeKey a, BstNodeKey b)
+{
+  return a < b;
+}
+bool eq(BstNodeKey a, BstNodeKey b)
+{
+  return a == b;
+}
+RedBlackBSTNode *deleteNodeMax(RedBlackBSTNode *node)
 {
   if (isRed(node->left))
     node = rotateRight(node);
@@ -191,15 +198,15 @@ redBlackBSTNode *deleteNodeMax(redBlackBSTNode *node)
   return fixUp(node);
 }
 
-void deleteNode(uint64_t key)
+void deleteNode(BstNodeKey key)
 {
   root = deleteNode(root, key);
   root->color = BLACK;
 }
 
-redBlackBSTNode *deleteNode(redBlackBSTNode *node, uint64_t key)
+RedBlackBSTNode *deleteNode(RedBlackBSTNode *node, BstNodeKey key)
 {
-  if (key < node->key)
+  if (less(key, node->key))
   {
     if (!isRed(node->left) && !isRed(node->left->left))
       node = moveRedLeft(node);
@@ -209,11 +216,11 @@ redBlackBSTNode *deleteNode(redBlackBSTNode *node, uint64_t key)
   {
     if (isRed(node->left))
       node = rotateRight(node);
-    if (key < node->key && (node->right == NULL))
+    if (less(key, node->key) && (node->right == NULL))
       return NULL;
     if (!isRed(node->right) && !isRed(node->right->left))
       node = moveRedRight(node);
-    if (key == node->key)
+    if (eq(key, node->key))
     {
       node->value = get(node->right, min(node->right));
       node->key = min(node->right);
@@ -226,23 +233,23 @@ redBlackBSTNode *deleteNode(redBlackBSTNode *node, uint64_t key)
   return fixUp(node);
 }
 
-bool isRed(redBlackBSTNode *node)
+bool isRed(RedBlackBSTNode *node)
 {
   if (node == NULL)
     return false;
   return (node->color == RED);
 }
 
-void colorFlip(redBlackBSTNode *node)
+void colorFlip(RedBlackBSTNode *node)
 {
   node->color = !node->color;
   node->left->color = !node->left->color;
   node->right->color = !node->right->color;
 }
 
-redBlackBSTNode *rotateLeft(redBlackBSTNode *node)
+RedBlackBSTNode *rotateLeft(RedBlackBSTNode *node)
 {
-  redBlackBSTNode *rnode = node->right;
+  RedBlackBSTNode *rnode = node->right;
   node->right = rnode->left;
   rnode->left = setN(node);
   rnode->color = rnode->left->color;
@@ -250,9 +257,9 @@ redBlackBSTNode *rotateLeft(redBlackBSTNode *node)
   return setN(rnode);
 }
 
-redBlackBSTNode *rotateRight(redBlackBSTNode *node)
+RedBlackBSTNode *rotateRight(RedBlackBSTNode *node)
 {
-  redBlackBSTNode *rnode = node->left;
+  RedBlackBSTNode *rnode = node->left;
   node->left = rnode->right;
   rnode->right = setN(node);
   rnode->color = rnode->right->color;
@@ -260,7 +267,7 @@ redBlackBSTNode *rotateRight(redBlackBSTNode *node)
   return setN(rnode);
 }
 
-redBlackBSTNode *moveRedLeft(redBlackBSTNode *node)
+RedBlackBSTNode *moveRedLeft(RedBlackBSTNode *node)
 {
   colorFlip(node);
   if (isRed(node->right->left))
@@ -272,7 +279,7 @@ redBlackBSTNode *moveRedLeft(redBlackBSTNode *node)
   return node;
 }
 
-redBlackBSTNode *moveRedRight(redBlackBSTNode *node)
+RedBlackBSTNode *moveRedRight(RedBlackBSTNode *node)
 {
   colorFlip(node);
   if (isRed(node->left->left))
@@ -283,7 +290,7 @@ redBlackBSTNode *moveRedRight(redBlackBSTNode *node)
   return node;
 }
 
-redBlackBSTNode *fixUp(redBlackBSTNode *node)
+RedBlackBSTNode *fixUp(RedBlackBSTNode *node)
 {
   if (isRed(node->right))
     node = rotateLeft(node);
@@ -297,7 +304,7 @@ redBlackBSTNode *fixUp(redBlackBSTNode *node)
   return setN(node);
 }
 
-redBlackBSTNode *setN(redBlackBSTNode *node)
+RedBlackBSTNode *setN(RedBlackBSTNode *node)
 {
   node->N = size(node->left) + size(node->right) + 1;
   if (height(node->left) > height(node->right))
@@ -312,7 +319,7 @@ int ipl()
   return ipl(root);
 }
 
-int ipl(redBlackBSTNode *node)
+int ipl(RedBlackBSTNode *node)
 {
   if (node == NULL)
     return 0;
@@ -324,7 +331,7 @@ int sizeRed()
   return sizeRed(root);
 }
 
-int sizeRed(redBlackBSTNode *node)
+int sizeRed(RedBlackBSTNode *node)
 {
   if (node == NULL)
     return 0;
@@ -344,11 +351,11 @@ bool isBST()
   return isBST(root, min(), max());
 }
 
-bool isBST(redBlackBSTNode *node, uint64_t min, uint64_t max)
+bool isBST(RedBlackBSTNode *node, uint64_t min, uint64_t max)
 {
   if (node == NULL)
     return true;
-  if (node->key < min || max < node->key)
+  if (less(node->key, min) || less(max, node->key))
     return false;
   return isBST(node->left, min, node->key) && isBST(node->right, node->key, max);
 }
@@ -358,7 +365,7 @@ bool is234()
   return is234(root);
 }
 
-bool is234(redBlackBSTNode *node)
+bool is234(RedBlackBSTNode *node)
 {
   if (node == NULL)
     return true;
@@ -374,7 +381,7 @@ bool is234(redBlackBSTNode *node)
 bool isBalanced()
 {
   int black = 0;
-  redBlackBSTNode *node = root;
+  RedBlackBSTNode *node = root;
   while (node != NULL)
   {
     if (!isRed(node))
@@ -384,7 +391,7 @@ bool isBalanced()
   return isBalanced(root, black);
 }
 
-bool isBalanced(redBlackBSTNode *node, int black)
+bool isBalanced(RedBlackBSTNode *node, int black)
 {
   if (node == NULL && black == 0)
     return true;
@@ -395,7 +402,7 @@ bool isBalanced(redBlackBSTNode *node, int black)
   return isBalanced(node->left, black) && isBalanced(node->right, black);
 }
 
-redBlackBSTNode *test()
+RedBlackBSTNode *test()
 {
   for (int i = 0; i < 100; i++)
   {

@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-std::string toString(redBlackBSTNode *node)
+std::string toString(RedBlackBSTNode *node)
 {
   char a[256] = {0};
   sprintf(a, "%lu,%lu", node->key, node->value);
@@ -26,7 +26,7 @@ bool StoreImpl::Init(const char *dir)
 {
   std::lock_guard<std::mutex> lock(mutex_);
   data_ = initNmapDb(dir);
-  redBlackBSTNode *node = test();
+  RedBlackBSTNode *node = test();
   printf("node-%d-%d-%d\n", size(), height(), heightB());
   std::cout << toString(node);
   return true;
