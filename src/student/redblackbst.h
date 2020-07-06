@@ -45,7 +45,7 @@ bool isBSTRoot(RedBlackBSTNode *root);
 bool isBalancedRoot(RedBlackBSTNode *root);
 bool is234Root(RedBlackBSTNode *root);
 BstNodeValue getRoot(RedBlackBSTNode *root,BstNodeKey key);
-void putRoot(RedBlackBSTNode *root,BstNodeKey key, BstNodeValue value);
+void putRoot(RedBlackBSTNode **root,BstNodeKey key, BstNodeValue value);
 void deleteNodeRoot(RedBlackBSTNode **root,BstNodeKey key);
 bool containsRoot(RedBlackBSTNode *root,BstNodeKey key);
 

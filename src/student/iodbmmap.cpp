@@ -78,8 +78,9 @@ MmapDb *initMmapDb(const char *dir)
   MmapDb *mmapDb = (MmapDb *)malloc(sizeof(MmapDb));
   mmapDb->data = (Data *)init2SizeMmapDb(dir, "iodata", sizeof(Data));
   mmapDb->index = (uint64_t *)init2SizeMmapDb(dir, "ioindex", sizeof(uint64_t));
-  mmapDb->rbBst = (RedBlackBSTNode **)init2SizeMmapDb(dir, "ioindex", sizeof(RedBlackBSTNode *));
+  mmapDb->rbBst =  (RedBlackBSTNode **)malloc(sizeof(RedBlackBSTNode **));
   *(mmapDb->rbBst) = NULL;
+  mmapDb->length = 0;
   return mmapDb;
 }
 
@@ -88,16 +89,32 @@ void deinitMmapDb(MmapDb *mmapDb)
   munmap(mmapDb->data, sizeof(Data) * DATACOUNT);
   munmap(mmapDb->index, sizeof(uint64_t) * DATACOUNT);
   free(mmapDb->rbBst);
+  mmapDb->rbBst = NULL;
   free(mmapDb);
   mmapDb = NULL;
 }
 
-bool writeMmapDb(Data *data_, int index, const DeltaPacket &packet)
+bool writeMmapDb(MmapDb *mmapDb, const DeltaPacket &packet)
 {
   bool result = true;
-  if (data_)
+  if (mmapDb)
   {
-    //Data *dataNode = data_ + index;
+    for (int i = 0; i < packet.delta_count; i++)
+    {
+      BstNodeValue value = getRoot(*(mmapDb->rbBst), packet.deltas[i].key);
+      if (value == NULL)
+      {
+        value = (BstNodeValue)malloc(sizeof(value));
+      }
+      uint64_t fieldSum = value->field;
+      for (int j = 0; j < DATA_FIELD_NUM; j++)
+      {
+        fieldSum += packet.deltas[i].delta[j];
+      }
+      value->version = packet.version;
+      value->field = fieldSum;
+      putRoot(mmapDb->rbBst, packet.deltas[i].key, value);
+    }
   }
   return result;
 }

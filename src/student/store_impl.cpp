@@ -42,26 +42,13 @@ void StoreImpl::Deinit()
 bool StoreImpl::WriteDeltaPacket(const DeltaPacket &packet)
 {
   std::lock_guard<std::mutex> lock(mutex_);
-  for (int i = 0; i < packet.delta_count; i++)
-  {
-    uint64_t fieldSum = 0;
-    for (int j = 0; j < DATA_FIELD_NUM; j++)
-    {
-      fieldSum += packet.deltas[i].delta[j];
-    }
-    //BstNodeValue value;
-    //value = (BstNodeValue)malloc(sizeof(value));
-    //printf("%lu,%lu\n", packet.deltas[i].key, fieldSum);
-    //put(packet.deltas[i].key, value);
-  }
-  bool result = true;
-  //writeMmapDb(data_, packet);
+  bool result = writeMmapDb(mmapDb_, packet);
   return result;
 }
 
 bool StoreImpl::ReadDataByVersion(uint64_t key, uint64_t version, Data &data)
 {
   std::lock_guard<std::mutex> lock(mutex_);
-  bool result = readMmapDb(mmapDb_->data, key, version, data);
+  bool result = readMmapDb(mmapDb_, key, version, data);
   return result;
 }
