@@ -1,0 +1,1 @@
+apt-get install -y cmake build-essential autoconf libtool pkg-config git

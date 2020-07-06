@@ -7,7 +7,7 @@
 std::string toString(RedBlackBSTNode *node)
 {
   char a[256] = {0};
-  sprintf(a, "%lu,%lu", node->key, node->value);
+  sprintf(a, "%lu", node->key);
   std::string s = "(" + std::string(a);
   if (node->left == NULL)
     s += "(";
@@ -28,7 +28,7 @@ bool StoreImpl::Init(const char *dir)
   data_ = initNmapDb(dir);
   RedBlackBSTNode *node = test();
   printf("node-%d-%d-%d\n", size(), height(), heightB());
-  std::cout << toString(node);
+  //std::cout << toString(node);
   return true;
 }
 
@@ -51,7 +51,10 @@ bool StoreImpl::WriteDeltaPacket(const DeltaPacket &packet)
     {
       fieldSum += packet.deltas[i].delta[j];
     }
-    put(packet.deltas[i].key, fieldSum);
+    BstNodeValue value;
+    value = (BstNodeValue)malloc(sizeof(value));
+    //printf("%lu,%lu\n", packet.deltas[i].key, fieldSum);
+    put(packet.deltas[i].key, value);
   }
   bool result = true;
   //writeMmapDb(data_, packet);

@@ -1,6 +1,7 @@
 
 #include "redblackbst.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 RedBlackBSTNode *root;
 int species = TD234;
@@ -51,16 +52,16 @@ int height(RedBlackBSTNode *node)
 }
 bool contains(BstNodeKey key)
 {
-  return (get(root, key) != 0);
+  return (get(root, key) != NULL);
 }
-uint64_t get(BstNodeKey key)
+BstNodeValue get(BstNodeKey key)
 {
   return get(root, key);
 }
-uint64_t get(RedBlackBSTNode *node, BstNodeKey key)
+BstNodeValue get(RedBlackBSTNode *node, BstNodeKey key)
 {
   if (node == NULL)
-    return 0;
+    return NULL;
   if (eq(key, node->key))
     return node->value;
   else if (less(key, node->key))
@@ -102,7 +103,7 @@ int heightB()
   return heightBLACK;
 }
 
-void put(BstNodeKey key, uint64_t value)
+void put(BstNodeKey key, BstNodeValue value)
 {
   root = insert(root, key, value);
   if (isRed(root))
@@ -110,7 +111,7 @@ void put(BstNodeKey key, uint64_t value)
   root->color = BLACK;
 }
 
-RedBlackBSTNode *insert(RedBlackBSTNode *node, BstNodeKey key, uint64_t value)
+RedBlackBSTNode *insert(RedBlackBSTNode *node, BstNodeKey key, BstNodeValue value)
 {
   if (node == NULL)
   {
@@ -406,8 +407,13 @@ RedBlackBSTNode *test()
 {
   for (int i = 0; i < 100; i++)
   {
-    put(i, i);
-    put(i, i + get(i));
+    BstNodeValue value = get(i);
+    if (value == NULL)
+    {
+      value = (BstNodeValue)malloc(sizeof(value));
+    }
+    value->field = value->field + i;
+    put(i, value);
   }
   return root;
 }

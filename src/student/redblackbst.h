@@ -7,18 +7,19 @@
 #define TD234 1
 #define BU23 2
 
-struct BstNodeValue
+struct BstValue
 {
   uint64_t version;
   uint64_t field;
 };
 
 typedef uint64_t BstNodeKey;
+typedef BstValue* BstNodeValue;
 
 struct BstNode
 {
   BstNodeKey key;
-  uint64_t value;
+  BstNodeValue value;
   struct BstNode *left;
   struct BstNode *right;
   bool color;
@@ -41,8 +42,8 @@ void deleteNodeMin();
 BstNodeKey max();
 BstNodeKey min();
 
-uint64_t get(BstNodeKey key);
-void put(BstNodeKey key, uint64_t value);
+BstNodeValue get(BstNodeKey key);
+void put(BstNodeKey key, BstNodeValue value);
 void deleteNode(BstNodeKey key);
 bool contains(BstNodeKey key);
 
@@ -67,8 +68,8 @@ int sizeRedBlackBST(RedBlackBSTNode *node);
 void colorFlip(RedBlackBSTNode *node);
 BstNodeKey max(RedBlackBSTNode *node);
 BstNodeKey min(RedBlackBSTNode *node);
-uint64_t get(RedBlackBSTNode *node, BstNodeKey key);
-RedBlackBSTNode *insert(RedBlackBSTNode *node, BstNodeKey key, uint64_t value);
+BstNodeValue get(RedBlackBSTNode *node, BstNodeKey key);
+RedBlackBSTNode *insert(RedBlackBSTNode *node, BstNodeKey key, BstNodeValue value);
 RedBlackBSTNode *deleteNodeMin(RedBlackBSTNode *node);
 RedBlackBSTNode *deleteNodeMax(RedBlackBSTNode *node);
 RedBlackBSTNode *deleteNode(RedBlackBSTNode *node, BstNodeKey key);

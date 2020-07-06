@@ -74,7 +74,7 @@ bool writeMmapDb(Data *data_, int index, const DeltaPacket &packet)
   bool result = true;
   if (data_)
   {
-    Data *dataNode = data_ + index;
+    //Data *dataNode = data_ + index;
     
   }
   return result;
