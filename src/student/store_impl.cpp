@@ -1,6 +1,4 @@
 #include "store_impl.h"
-#include "iodbmmap.h"
-#include "redblackbst.h"
 #include <string>
 #include <iostream>
 
@@ -25,19 +23,19 @@ std::string toString(RedBlackBSTNode *node)
 bool StoreImpl::Init(const char *dir)
 {
   std::lock_guard<std::mutex> lock(mutex_);
-  data_ = initNmapDb(dir);
-  RedBlackBSTNode *node = test();
-  printf("node-%d-%d-%d\n", size(), height(), heightB());
-  //std::cout << toString(node);
+  mmapDb_ = initMmapDb(dir);
+  RedBlackBSTNode *root = test(mmapDb_->rbBst);
+  printf("node-%d-%d\n", sizeRoot(root), heightRoot(root));
+  //std::cout << toString(root);
   return true;
 }
 
 void StoreImpl::Deinit()
 {
   std::lock_guard<std::mutex> lock(mutex_);
-  if (data_)
+  if (mmapDb_)
   {
-    deinitMmapDb(data_);
+    deinitMmapDb(mmapDb_);
   }
 }
 
@@ -51,10 +49,10 @@ bool StoreImpl::WriteDeltaPacket(const DeltaPacket &packet)
     {
       fieldSum += packet.deltas[i].delta[j];
     }
-    BstNodeValue value;
-    value = (BstNodeValue)malloc(sizeof(value));
+    //BstNodeValue value;
+    //value = (BstNodeValue)malloc(sizeof(value));
     //printf("%lu,%lu\n", packet.deltas[i].key, fieldSum);
-    put(packet.deltas[i].key, value);
+    //put(packet.deltas[i].key, value);
   }
   bool result = true;
   //writeMmapDb(data_, packet);
@@ -64,6 +62,6 @@ bool StoreImpl::WriteDeltaPacket(const DeltaPacket &packet)
 bool StoreImpl::ReadDataByVersion(uint64_t key, uint64_t version, Data &data)
 {
   std::lock_guard<std::mutex> lock(mutex_);
-  bool result = readMmapDb(data_, key, version, data);
+  bool result = readMmapDb(mmapDb_->data, key, version, data);
   return result;
 }

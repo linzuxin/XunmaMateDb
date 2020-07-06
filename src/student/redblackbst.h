@@ -6,6 +6,7 @@
 #define BST 0
 #define TD234 1
 #define BU23 2
+#define SPECIES TD234
 
 struct BstValue
 {
@@ -29,35 +30,31 @@ struct BstNode
 
 typedef BstNode RedBlackBSTNode;
 
-RedBlackBSTNode *test();
-int ipl();
-int size();
-bool check();
-int sizeRed();
-int rootRank();
-int height();
-int heightB();
-void deleteNodeMax();
-void deleteNodeMin();
-BstNodeKey max();
-BstNodeKey min();
-
-BstNodeValue get(BstNodeKey key);
-void put(BstNodeKey key, BstNodeValue value);
-void deleteNode(BstNodeKey key);
-bool contains(BstNodeKey key);
+RedBlackBSTNode *test(RedBlackBSTNode **root);
+int iplRoot(RedBlackBSTNode *root);
+int sizeRoot(RedBlackBSTNode *root);
+bool checkRoot(RedBlackBSTNode *root);
+int sizeRedRoot(RedBlackBSTNode *root);
+int rootRankRoot(RedBlackBSTNode *root);
+int heightRoot(RedBlackBSTNode *root);
+void deleteNodeMaxRoot(RedBlackBSTNode **root);
+void deleteNodeMinRoot(RedBlackBSTNode **root);
+BstNodeKey maxRoot(RedBlackBSTNode *root);
+BstNodeKey minRoot(RedBlackBSTNode *root);
+bool isBSTRoot(RedBlackBSTNode *root);
+bool isBalancedRoot(RedBlackBSTNode *root);
+bool is234Root(RedBlackBSTNode *root);
+BstNodeValue getRoot(RedBlackBSTNode *root,BstNodeKey key);
+void putRoot(RedBlackBSTNode *root,BstNodeKey key, BstNodeValue value);
+void deleteNodeRoot(RedBlackBSTNode **root,BstNodeKey key);
+bool containsRoot(RedBlackBSTNode *root,BstNodeKey key);
 
 bool eq(BstNodeKey a, BstNodeKey b);
 bool less(BstNodeKey a, BstNodeKey b);
-
-bool isBST();
 bool isBST(RedBlackBSTNode *node, uint64_t min, uint64_t max);
-bool is234();
 bool is234(RedBlackBSTNode *node);
-bool isBalanced();
 bool isBalanced(RedBlackBSTNode *node, int black);
 bool isRed(RedBlackBSTNode *node);
-
 int ipl(RedBlackBSTNode *node);
 int sizeRed(RedBlackBSTNode *node);
 

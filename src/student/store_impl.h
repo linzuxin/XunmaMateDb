@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <mutex>
-
+#include "iodbmmap.h"
 #include "common.h"
 
 class StoreImpl : public StoreIntf,
@@ -20,5 +20,5 @@ public:
 
 private:
   std::mutex mutex_;
-  Data *data_;
+  MmapDb *mmapDb_;
 };

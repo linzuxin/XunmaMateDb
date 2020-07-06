@@ -3,11 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-RedBlackBSTNode *root;
-int species = TD234;
-int heightBLACK;
-
-int size()
+int sizeRoot(RedBlackBSTNode *root)
 {
   return size(root);
 }
@@ -25,7 +21,7 @@ int sizeRedBlackBST(RedBlackBSTNode *node)
   else
     return node->N;
 }
-int rootRank()
+int rootRankRoot(RedBlackBSTNode *root)
 {
   if (root == NULL)
     return 0;
@@ -39,7 +35,7 @@ int rootRank(RedBlackBSTNode *node)
   else
     return size(node->left);
 }
-int height()
+int heightRoot(RedBlackBSTNode *root)
 {
   return height(root);
 }
@@ -50,11 +46,11 @@ int height(RedBlackBSTNode *node)
   else
     return node->height;
 }
-bool contains(BstNodeKey key)
+bool containsRoot(RedBlackBSTNode *root, BstNodeKey key)
 {
   return (get(root, key) != NULL);
 }
-BstNodeValue get(BstNodeKey key)
+BstNodeValue getRoot(RedBlackBSTNode *root, BstNodeKey key)
 {
   return get(root, key);
 }
@@ -69,14 +65,14 @@ BstNodeValue get(RedBlackBSTNode *node, BstNodeKey key)
   else
     return get(node->right, key);
 }
-BstNodeKey min()
+BstNodeKey minRoot(RedBlackBSTNode *root)
 {
   if (root == NULL)
     return 0;
   else
     return min(root);
 }
-BstNodeKey max()
+BstNodeKey maxRoot(RedBlackBSTNode *root)
 {
   if (root == NULL)
     return 0;
@@ -98,17 +94,10 @@ BstNodeKey max(RedBlackBSTNode *node)
     return max(node->right);
 }
 
-int heightB()
+void putRoot(RedBlackBSTNode **root, BstNodeKey key, BstNodeValue value)
 {
-  return heightBLACK;
-}
-
-void put(BstNodeKey key, BstNodeValue value)
-{
-  root = insert(root, key, value);
-  if (isRed(root))
-    heightBLACK++;
-  root->color = BLACK;
+  *root = insert(*root, key, value);
+  (*root)->color = BLACK;
 }
 
 RedBlackBSTNode *insert(RedBlackBSTNode *node, BstNodeKey key, BstNodeValue value)
@@ -124,7 +113,7 @@ RedBlackBSTNode *insert(RedBlackBSTNode *node, BstNodeKey key, BstNodeValue valu
     return nodeTemp;
   }
 
-  if (species == TD234)
+  if (SPECIES == TD234)
     if (isRed(node->left) && isRed(node->right))
       colorFlip(node);
 
@@ -135,7 +124,7 @@ RedBlackBSTNode *insert(RedBlackBSTNode *node, BstNodeKey key, BstNodeValue valu
   else
     node->right = insert(node->right, key, value);
 
-  if (species == BST)
+  if (SPECIES == BST)
     return setN(node);
 
   if (isRed(node->right))
@@ -144,17 +133,17 @@ RedBlackBSTNode *insert(RedBlackBSTNode *node, BstNodeKey key, BstNodeValue valu
   if (isRed(node->left) && isRed(node->left->left))
     node = rotateRight(node);
 
-  if (species == BU23)
+  if (SPECIES == BU23)
     if (isRed(node->left) && isRed(node->right))
       colorFlip(node);
 
   return setN(node);
 }
 
-void deleteNodeMin()
+void deleteNodeMinRoot(RedBlackBSTNode **root)
 {
-  root = deleteNodeMin(root);
-  root->color = BLACK;
+  (*root) = deleteNodeMin(*root);
+  (*root)->color = BLACK;
 }
 
 RedBlackBSTNode *deleteNodeMin(RedBlackBSTNode *node)
@@ -170,10 +159,10 @@ RedBlackBSTNode *deleteNodeMin(RedBlackBSTNode *node)
   return fixUp(node);
 }
 
-void deleteNodeMax()
+void deleteNodeMaxRoot(RedBlackBSTNode **root)
 {
-  root = deleteNodeMax(root);
-  root->color = BLACK;
+  (*root) = deleteNodeMax((*root));
+  (*root)->color = BLACK;
 }
 bool less(BstNodeKey a, BstNodeKey b)
 {
@@ -199,10 +188,10 @@ RedBlackBSTNode *deleteNodeMax(RedBlackBSTNode *node)
   return fixUp(node);
 }
 
-void deleteNode(BstNodeKey key)
+void deleteNodeRoot(RedBlackBSTNode **root, BstNodeKey key)
 {
-  root = deleteNode(root, key);
-  root->color = BLACK;
+  (*root) = deleteNode((*root), key);
+  (*root)->color = BLACK;
 }
 
 RedBlackBSTNode *deleteNode(RedBlackBSTNode *node, BstNodeKey key)
@@ -315,7 +304,7 @@ RedBlackBSTNode *setN(RedBlackBSTNode *node)
   return node;
 }
 
-int ipl()
+int iplRoot(RedBlackBSTNode *root)
 {
   return ipl(root);
 }
@@ -327,7 +316,7 @@ int ipl(RedBlackBSTNode *node)
   return size(node) - 1 + ipl(node->left) + ipl(node->right);
 }
 
-int sizeRed()
+int sizeRedRoot(RedBlackBSTNode *root)
 {
   return sizeRed(root);
 }
@@ -342,14 +331,14 @@ int sizeRed(RedBlackBSTNode *node)
     return sizeRed(node->left) + sizeRed(node->right);
 }
 
-bool check()
+bool checkRoot(RedBlackBSTNode *root)
 {
-  return isBST() && is234() && isBalanced();
+  return isBSTRoot(root) && is234Root(root) && isBalancedRoot(root);
 }
 
-bool isBST()
+bool isBSTRoot(RedBlackBSTNode *root)
 {
-  return isBST(root, min(), max());
+  return isBST(root, minRoot(root), maxRoot(root));
 }
 
 bool isBST(RedBlackBSTNode *node, uint64_t min, uint64_t max)
@@ -361,7 +350,7 @@ bool isBST(RedBlackBSTNode *node, uint64_t min, uint64_t max)
   return isBST(node->left, min, node->key) && isBST(node->right, node->key, max);
 }
 
-bool is234()
+bool is234Root(RedBlackBSTNode *root)
 {
   return is234(root);
 }
@@ -379,7 +368,7 @@ bool is234(RedBlackBSTNode *node)
   return is234(node->left) && is234(node->right);
 }
 
-bool isBalanced()
+bool isBalancedRoot(RedBlackBSTNode *root)
 {
   int black = 0;
   RedBlackBSTNode *node = root;
@@ -403,17 +392,17 @@ bool isBalanced(RedBlackBSTNode *node, int black)
   return isBalanced(node->left, black) && isBalanced(node->right, black);
 }
 
-RedBlackBSTNode *test()
+RedBlackBSTNode *test(RedBlackBSTNode **root)
 {
   for (int i = 0; i < 100; i++)
   {
-    BstNodeValue value = get(i);
+    BstNodeValue value = getRoot(*root, i);
     if (value == NULL)
     {
       value = (BstNodeValue)malloc(sizeof(value));
     }
     value->field = value->field + i;
-    put(i, value);
+    putRoot(root, i, value);
   }
-  return root;
+  return *root;
 }
