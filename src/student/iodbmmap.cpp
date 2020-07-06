@@ -118,7 +118,7 @@ bool writeMmapDb(MmapDb *mmapDb, const DeltaPacket &packet)
   }
   return result;
 }
-bool readMmapDb(Data *data_, uint64_t key, uint64_t version, Data &data)
+bool readMmapDb(MmapDb *data_, uint64_t key, uint64_t version, Data &data)
 {
   bool result = true;
 
