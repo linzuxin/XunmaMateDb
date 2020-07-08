@@ -134,7 +134,6 @@ uint8_t updateLastField(Data *data, BstNodeValue nodeValue, uint8_t count, uint8
   {
     result = 2;
     nodeValue->version = version;
-    nodeValue->field = fieldSum;
   }
   else
   {
@@ -173,7 +172,6 @@ uint8_t setDataField(Data *data, uint8_t length, BstNodeValue nodeValue, uint64_
     {
       result = 3;
       nodeValue->version = data->field[(count - 1) * 2];
-      nodeValue->field = data->field[(count - 1) * 2 + 1];
     }
     updateDataField(data, count, pos, version, fieldSum);
   }
@@ -186,7 +184,6 @@ void newDataField(MmapDb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue node
   memcpy(mmapDb->dataInstance, (mmapDb->dataIoDb + nodeValue->index), sizeof(Data));
   AppendDataInfo(nInfo, oldIndex);
   data->field[0] = nodeValue->version;
-  data->field[1] = nodeValue->field;
   data->version = nInfo->info;
   memcpy((mmapDb->dataIoDb + nodeValue->index), data, sizeof(Data));
 }
@@ -239,7 +236,6 @@ void setMoreDataField(MmapDb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue 
       case 2:
       case 3:
         lastVersion = nodeValue->version;
-        lastFieldSum = nodeValue->field;
         break;
       default:
         break;
@@ -259,7 +255,6 @@ void setMoreDataField(MmapDb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue 
       memcpy((mmapDb->dataIoDb + oldDataIndex), dataTemp, sizeof(Data));
       dataTemp = dataPrevTemp;
       lastVersion = nodeValue->version;
-      lastFieldSum = nodeValue->field;
     }
 
     if (first == 1)

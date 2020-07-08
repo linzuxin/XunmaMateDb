@@ -401,7 +401,6 @@ RedBlackBSTNode *test(RedBlackBSTNode **root)
     {
       value = (BstNodeValue)malloc(sizeof(value));
     }
-    value->field = value->field + i;
     putRoot(root, i, value);
   }
   return *root;
