@@ -1,5 +1,3 @@
-
-#include "iodbmmap.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -8,8 +6,9 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "mmap_iodb.h"
 
-void createMmapDb(const char *dataPath, unsigned long datasize)
+void createMmapIodb(const char *dataPath, unsigned long datasize)
 {
   int fd;
   void *data = malloc(datasize);
@@ -25,38 +24,38 @@ void createMmapDb(const char *dataPath, unsigned long datasize)
   data = NULL;
   close(fd);
 }
-int createPathMmapDb(const char *dir)
+int createPathMmapIodb(const char *dir)
 {
   int accessresult = access(dir, 0);
   int mkdirresult = 0;
   if (accessresult == -1)
   {
     mkdirresult = mkdir(dir, 0755);
-    //printf("createPathMmapDb:%d,%s\n", mkdirresult, dir);
+    //printf("createPathMmapIodb:%d,%s\n", mkdirresult, dir);
   }
   return mkdirresult;
 }
-void createFileMmapDb(const char *dataPath, unsigned long datasize)
+void createFileMmapIodb(const char *dataPath, unsigned long datasize)
 {
   int accessresult = access(dataPath, 0);
   if (accessresult == -1)
   {
-    createMmapDb(dataPath, datasize);
-    //printf("createFileMmapDb:%s\n", dataPath);
+    createMmapIodb(dataPath, datasize);
+    //printf("createFileMmapIodb:%s\n", dataPath);
   }
 }
 
-void *init2SizeMmapDb(const char *dir, const char *filename, unsigned long datasize)
+void *init2SizeMmapIodb(const char *dir, const char *filename, unsigned long datasize)
 {
   char dataPath[DIRLEN] = "";
   int fd;
   sprintf(dataPath, "%s/%s", dir, filename);
-  if (createPathMmapDb(dir) < 0)
+  if (createPathMmapIodb(dir) < 0)
   {
     //printf("create open failed\n");
     exit(1);
   }
-  createFileMmapDb(dataPath, datasize);
+  createFileMmapIodb(dataPath, datasize);
   fd = open(dataPath, O_RDWR);
   if (fd < 0)
   {
@@ -73,19 +72,19 @@ void *init2SizeMmapDb(const char *dir, const char *filename, unsigned long datas
   return index;
 }
 
-MmapDb *initMmapDb(const char *dir)
+MmapIodb *initMmapIodb(const char *dir)
 {
-  MmapDb *mmapDb = (MmapDb *)malloc(sizeof(MmapDb));
-  mmapDb->dataIoDb = (Data *)init2SizeMmapDb(dir, "iodata", sizeof(Data));
-  mmapDb->indexIoDb = (uint64_t *)init2SizeMmapDb(dir, "ioindex", sizeof(uint64_t));
+  MmapIodb *mmapDb = (MmapIodb *)malloc(sizeof(MmapIodb));
+  mmapDb->dataIoDb = (Data *)init2SizeMmapIodb(dir, "iodata", sizeof(Data));
+  mmapDb->indexIoDb = (uint64_t *)init2SizeMmapIodb(dir, "ioindex", sizeof(uint64_t));
   mmapDb->dataInstance = (Data *)malloc(sizeof(Data));
-  mmapDb->rbBst = (RedBlackBSTNode **)malloc(sizeof(RedBlackBSTNode **));
+  mmapDb->rbBst = (KeyMap **)malloc(sizeof(KeyMap **));
   *(mmapDb->rbBst) = NULL;
   mmapDb->length = 0;
   return mmapDb;
 }
 
-void deinitMmapDb(MmapDb *mmapDb)
+void deinitMmapIodb(MmapIodb *mmapDb)
 {
   munmap(mmapDb->dataIoDb, sizeof(Data) * DATACOUNT);
   munmap(mmapDb->indexIoDb, sizeof(uint64_t) * DATACOUNT);
@@ -177,7 +176,7 @@ uint8_t setDataField(Data *data, uint8_t length, BstNodeValue nodeValue, uint64_
   }
   return result;
 }
-void newDataField(MmapDb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue nodeValue)
+void newDataField(MmapIodb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue nodeValue)
 {
   uint32_t oldIndex = nodeValue->index;
   nodeValue->index = mmapDb->length++;
@@ -187,7 +186,7 @@ void newDataField(MmapDb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue node
   data->version = nInfo->info;
   memcpy((mmapDb->dataIoDb + nodeValue->index), data, sizeof(Data));
 }
-void setTopDataField(MmapDb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue nodeValue, uint64_t version, uint64_t fieldSum)
+void setTopDataField(MmapIodb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue nodeValue, uint64_t version, uint64_t fieldSum)
 {
   uint8_t setResult = setDataField(data, nInfo->infoItem.lenght, nodeValue, version, fieldSum);
   switch (setResult)
@@ -207,7 +206,7 @@ void setTopDataField(MmapDb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue n
     break;
   }
 }
-void setMoreDataField(MmapDb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue nodeValue, uint64_t version, uint64_t fieldSum)
+void setMoreDataField(MmapIodb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue nodeValue, uint64_t version, uint64_t fieldSum)
 {
   uint8_t flag = 0;
   uint8_t first = 1;
@@ -264,7 +263,7 @@ void setMoreDataField(MmapDb *mmapDb, Data *data, DataInfo *nInfo, BstNodeValue 
     }
   } while (flag == 1);
 }
-void setDataInfo(MmapDb *mmapDb, BstNodeValue nodeValue, uint64_t version, uint64_t fieldSum)
+void setDataInfo(MmapIodb *mmapDb, BstNodeValue nodeValue, uint64_t version, uint64_t fieldSum)
 {
   memcpy(mmapDb->dataInstance, (mmapDb->dataIoDb + nodeValue->index), sizeof(Data));
   Data *data = mmapDb->dataInstance;
@@ -294,7 +293,7 @@ void setDataInfo(MmapDb *mmapDb, BstNodeValue nodeValue, uint64_t version, uint6
   }
 }
 
-bool writeMmapDb(MmapDb *mmapDb, const DeltaPacket &packet)
+bool writeMmapIodb(MmapIodb *mmapDb, const DeltaPacket &packet)
 {
   bool result = false;
   if (mmapDb &&
@@ -322,7 +321,7 @@ bool writeMmapDb(MmapDb *mmapDb, const DeltaPacket &packet)
   }
   return result;
 }
-uint8_t getMoreDataField(MmapDb *mmapDb, BstNodeValue nodeValue, uint64_t version, Data &data)
+uint8_t getMoreDataField(MmapIodb *mmapDb, BstNodeValue nodeValue, uint64_t version, Data &data)
 {
   uint8_t flag = 1;
   uint8_t first = 1;
@@ -378,7 +377,7 @@ uint8_t getMoreDataField(MmapDb *mmapDb, BstNodeValue nodeValue, uint64_t versio
   } while (flag == 1);
   return lenght;
 }
-bool readMmapDb(MmapDb *mmapDb, uint64_t key, uint64_t version, Data &data)
+bool readMmapIodb(MmapIodb *mmapDb, uint64_t key, uint64_t version, Data &data)
 {
   bool result = false;
   BstNodeValue value = getRoot(*(mmapDb->rbBst), key);

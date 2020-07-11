@@ -1,10 +1,11 @@
 #pragma once
 
 #include "common.h"
-#include "redblackbst.h"
+#include "key_map.h"
 
 #define DATACOUNT 30000
 #define DIRLEN 256
+
 union DataInfo {
   struct
   {
@@ -17,17 +18,17 @@ union DataInfo {
   uint64_t info;
 };
 
-struct MmapDb
+struct MmapIodb
 {
   uint64_t *indexIoDb;
   Data *dataIoDb;
   Data *dataInstance;
-  RedBlackBSTNode **rbBst;
+  KeyMap **rbBst;
   uint32_t length;
 };
 
-MmapDb *initMmapDb(const char *dir);
-void deinitMmapDb(MmapDb *);
+MmapIodb *initMmapIodb(const char *dir);
+void deinitMmapIodb(MmapIodb *);
 
-bool writeMmapDb(MmapDb *, const DeltaPacket &packet);
-bool readMmapDb(MmapDb *, uint64_t key, uint64_t version, Data &data);
+bool writeMmapIodb(MmapIodb *, const DeltaPacket &packet);
+bool readMmapIodb(MmapIodb *, uint64_t key, uint64_t version, Data &data);
