@@ -1,8 +1,10 @@
 #pragma once
 #include <memory>
 #include <mutex>
-#include "iodbmmap.h"
 #include "common.h"
+#include "hash.h"
+
+
 class StoreImpl : public StoreIntf,
                   public std::enable_shared_from_this<StoreImpl> {
 public:
@@ -18,5 +20,6 @@ public:
 
 private:
   std::mutex mutex_;
-  MmapDb *mmapDb_;
+  HashItem hashList[HASH_LEN];
+
 };
