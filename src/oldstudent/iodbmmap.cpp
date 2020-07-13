@@ -403,3 +403,70 @@ bool readMmapDb(MmapDb *mmapDb, uint64_t key, uint64_t version, Data &data)
   }
   return result;
 }
+
+
+
+
+ERROR
+
+0/0
+
+用例通过
+
+Null
+
+运行时间
+
+-- The C compiler identification is GNU 5.4.0
+-- The CXX compiler identification is GNU 5.4.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found PythonInterp: /usr/local/bin/python (found version "3.5.1") 
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Looking for pthread_create
+-- Looking for pthread_create - not found
+-- Check if compiler accepts -pthread
+-- Check if compiler accepts -pthread - yes
+-- Found Threads: TRUE  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /projects/teacher
+Scanning dependencies of target hello
+[  6%] Building CXX object src/CMakeFiles/hello.dir/student/hash.cpp.o
+[ 13%] Building CXX object src/CMakeFiles/hello.dir/student/profile.cpp.o
+[ 20%] Building CXX object src/CMakeFiles/hello.dir/student/replay.cpp.o
+[ 26%] Building CXX object src/CMakeFiles/hello.dir/student/store_impl.cpp.o
+src/CMakeFiles/hello.dir/build.make:101: recipe for target 'src/CMakeFiles/hello.dir/student/store_impl.cpp.o' failed
+CMakeFiles/Makefile2:129: recipe for target 'src/CMakeFiles/hello.dir/all' failed
+Makefile:140: recipe for target 'all' failed
+
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    IS_ONLINE
+
+
+
+10488
+/projects/teacher/src/student/hash.cpp: In function ‘bool HashSearchIndex(HashItem*, uint64_t, uint64_t, uint64_t, Data&)’:
+/projects/teacher/src/student/hash.cpp:183:16: warning: unused variable ‘gnode’ [-Wunused-variable]
+  HashLinkNode *gnode;
+                ^
+In file included from /projects/teacher/src/student/store_impl.cpp:1:0:
+/projects/teacher/src/student/store_impl.h:24:35: error: could not convert ‘0’ from ‘int’ to ‘HashItem’
+   HashItem hashList[HASH_LEN] = {0};
+                                   ^
+make[2]: *** [src/CMakeFiles/hello.dir/student/store_impl.cpp.o] Error 1
+make[1]: *** [src/CMakeFiles/hello.dir/all] Error 2
+make: *** [all] Error 2

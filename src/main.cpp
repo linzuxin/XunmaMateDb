@@ -19,13 +19,34 @@ int main(int argc, char *argv[])
         for (uint8_t j = 0; j < delta_count; j++)
         {
             packet->deltas[j].key = j + k * delta_count;
+            //printf("insert %lu,%lu\n", packet->deltas[j].key, packet->version);
             for (uint8_t i = 0; i < DATA_FIELD_NUM; i++)
             {
                 packet->deltas[j].delta[i] = i;
             }
         }
-        printf("delta_length:%d\n",k);
+
         intf->WriteDeltaPacket(*packet.get());
+        for (uint8_t j = 0; j < delta_count; j++)
+        {
+            Data data;
+            bool result = intf->ReadDataByVersion(j + k * delta_count, k, data);
+            if (data.key != j + k * delta_count)
+            {
+                printf("error key:%d,%lu\n", j + k * delta_count, data.key);
+            }
+            if (data.version != k)
+            {
+                printf("error version:%d,%lu\n", k, data.version);
+            }
+            for (uint8_t i = 0; i < DATA_FIELD_NUM; i++)
+            {
+                if (data.field[1] != packet->deltas[j].delta[1])
+                {
+                    printf("error field:%lu,%d,%d\n", data.field[1], packet->deltas[j].delta[i], i);
+                }
+            }
+        }
     }
 
     Data data;

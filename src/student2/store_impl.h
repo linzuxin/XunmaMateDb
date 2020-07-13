@@ -1,9 +1,12 @@
 #pragma once
+#include "common.h"
+
 #include <memory>
 #include <mutex>
-#include "profile.h"
-#include "common.h"
-#include "hash.h"
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <unordered_map>
 
 
 class StoreImpl : public StoreIntf,
@@ -21,6 +24,6 @@ public:
 
 private:
   std::mutex mutex_;
-  HashTable hashList[HASH_LEN];
-  Profile *profile;
+  std::unordered_map<uint64_t,std::vector<DeltaItem>> tree;
+  uint64_t global_max_version = 0;
 };
