@@ -12,21 +12,6 @@ HashLinkNode *HashLinkFind(HashLinkNode *head, uint64_t version)
 	}
 	return result;
 }
-HashLinkNode *HashLinkFindMax(HashLinkNode *head, uint64_t version)
-{
-	HashLinkNode *result = NULL;
-	HashLinkNode *node = head;
-	while (node)
-	{
-		if (node->data.version >= version)
-		{
-			result = node;
-		}
-
-		node = node->next;
-	}
-	return result;
-}
 HashLinkNode *CreateHashLinkNode(const DeltaItem *deltaItem, uint64_t version)
 {
 	//声明一个链表节点并申请空间，用于存储Data。
@@ -54,6 +39,13 @@ void AppendHashLinkNode(HashLinkNode *node, const DeltaItem *deltaItem, uint64_t
 		node->data.field[i] += deltaItem->delta[i];
 	}
 }
+void AppendHashPrevLinkNode(HashLinkNode *node,HashLinkNode *prevNode)
+{
+	for (size_t i = 0; i < DATA_FIELD_NUM; i++)
+	{
+		node->data.field[i] += prevNode->data.field[i];
+	}
+}
 void AppendNextHashLinkNode(HashLinkNode *node, const DeltaItem *deltaItem, uint64_t version)
 {
 	HashLinkNode *nodeNext = node->next;
@@ -63,7 +55,7 @@ void AppendNextHashLinkNode(HashLinkNode *node, const DeltaItem *deltaItem, uint
 		{
 			nodeNext->data.field[i] += deltaItem->delta[i];
 		}
-		nodeNext = node->next;
+		nodeNext = nodeNext->next;
 	}
 }
 //插入链表节点
@@ -89,6 +81,7 @@ HashLinkNode *HashLinkInsert(HashTable *hashList, uint64_t index, const DeltaIte
 			else
 			{
 				HashLinkNode *node = CreateHashLinkNode(deltaItem, version);
+				AppendHashPrevLinkNode(node,bnode);
 				node->next = bnode->next;
 				bnode->next = node;
 				enode = node;
@@ -194,7 +187,7 @@ bool HashSearchIndex(HashTable *hashList, uint64_t index, uint64_t key, uint64_t
 	if (hashList[index].key == key)
 	{
 		//找到，赋值返回
-		HashLinkNode *bnode = HashLinkFindMax(hashList[index].head, version);
+		HashLinkNode *bnode = HashLinkFind(hashList[index].head, version);
 		if (bnode)
 		{
 			data.key = bnode->data.key;
