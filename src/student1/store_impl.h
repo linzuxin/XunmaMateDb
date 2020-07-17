@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <mutex>
+#include "profile.h"
 #include "common.h"
 #include "hash.h"
 
@@ -20,6 +21,6 @@ public:
 
 private:
   std::mutex mutex_;
-  HashItem hashList[HASH_LEN];
-
+  HashTable hashList[HASH_LEN];
+  Profile *profile;
 };
