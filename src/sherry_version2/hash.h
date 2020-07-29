@@ -1,24 +1,27 @@
+#pragma once
 #include "common.h"
+#include "dbio.h"
+#include <string.h>
 
 #define HASH_LEN 80000
 #define HASH_PRIME_NUM 79999
 #define NULLKEY 0
 
 //hash表中元素指向的链表节点
-typedef struct HashLinkNode
+struct HashLinkNode
 {
 	uint64_t version;
 	uint64_t indexOffset;
 	HashLinkNode *next;
 
-}HashLinkNode;
+};
 
 //hash表元素
-typedef struct HashItem
+struct HashItem
 {
 	uint64_t key;
 	HashLinkNode *head;
-}HashItem;
+};
 
 HashLinkNode* HashLinkNodeCreate(uint64_t version);
 HashLinkNode* HashLinkFind(HashLinkNode* head, uint64_t version);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include <string.h>
 
 #define HASH_LEN 80000
 #define HASH_PRIME_NUM 79999

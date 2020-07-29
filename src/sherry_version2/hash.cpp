@@ -1,12 +1,10 @@
 #include "hash.h"
-#include "dbio.h"
-#include <string.h>
 
-HashLinkNode* HashLinkNodeCreate(uint64_t version)
+HashLinkNode *HashLinkNodeCreate(uint64_t version)
 {
 	//声明一个链表节点并申请空间，用于存储Data。
 	HashLinkNode *node = NULL;
-	if(!(node = (HashLinkNode*)malloc(sizeof(HashLinkNode))))
+	if (!(node = (HashLinkNode *)malloc(sizeof(HashLinkNode))))
 	{
 		return NULL;
 	}
@@ -18,10 +16,10 @@ HashLinkNode* HashLinkNodeCreate(uint64_t version)
 	return node;
 }
 
-HashLinkNode* HashLinkFind(HashLinkNode* head, uint64_t version) 
+HashLinkNode *HashLinkFind(HashLinkNode *head, uint64_t version)
 {
-	HashLinkNode* result = NULL;
-	HashLinkNode* node = head;
+	HashLinkNode *result = NULL;
+	HashLinkNode *node = head;
 	//循环查找，找到比当前版本小的最大版本所在节点
 	while (node && node->version <= version)
 	{
@@ -31,10 +29,10 @@ HashLinkNode* HashLinkFind(HashLinkNode* head, uint64_t version)
 	return result;
 }
 
-bool CurrHashDataApplyOnly(Dbio *dbio, HashLinkNode *node,DeltaItem *deltaItem)
+bool CurrHashDataApplyOnly(Dbio *dbio, HashLinkNode *node, DeltaItem *deltaItem)
 {
-	bool result = writeData(dbio,deltaItem,node->version);
-	node->indexOffset = dbio->indexPosition-1;
+	bool result = writeData(dbio, deltaItem, node->version);
+	node->indexOffset = dbio->indexPosition - 1;
 	return result;
 }
 
@@ -43,19 +41,19 @@ bool CurrHashDataApply(Dbio *dbio, HashLinkNode *node, HashLinkNode *bnode, Delt
 	bool result = false;
 	//get bnode's data's field
 	Data *tmp = NULL;
-	if(!(tmp = (Data*)malloc(sizeof(Data))))
+	if (!(tmp = (Data *)malloc(sizeof(Data))))
 	{
 		printf("tmp Data malloc fail!\n");
 		return result;
 	}
 	result = readData(dbio, bnode->indexOffset, tmp);
-	if(result == false)
+	if (result == false)
 	{
 		return result;
 	}
 	//bnode's field plus deltaItem's delta
 	DeltaItem *tmpWrite = NULL;
-	if(!(tmpWrite = (DeltaItem*)malloc(sizeof(DeltaItem))))
+	if (!(tmpWrite = (DeltaItem *)malloc(sizeof(DeltaItem))))
 	{
 		printf("tmpWrite DeltaItem malloc fail!\n");
 		return result;
@@ -66,12 +64,12 @@ bool CurrHashDataApply(Dbio *dbio, HashLinkNode *node, HashLinkNode *bnode, Delt
 		tmpWrite->delta[i] = deltaItem->delta[i] + tmp->field[i];
 	}
 	//write node's data
-	writeData(dbio,tmpWrite,node->version);
-	node->indexOffset = dbio->indexPosition-1;
-
+	writeData(dbio, tmpWrite, node->version);
+	node->indexOffset = dbio->indexPosition - 1;
+	return result;
 }
 
-bool ForwHashDataApply(Dbio *dbio,HashLinkNode *node, DeltaItem *deltaItem)
+bool ForwHashDataApply(Dbio *dbio, HashLinkNode *node, DeltaItem *deltaItem)
 {
 	bool result = false;
 	HashLinkNode *nodeNext = node->next;
@@ -79,7 +77,7 @@ bool ForwHashDataApply(Dbio *dbio,HashLinkNode *node, DeltaItem *deltaItem)
 	{
 		//get next node's data's field
 		Data *tmp = NULL;
-		if(!(tmp = (Data*)malloc(sizeof(Data))))
+		if (!(tmp = (Data *)malloc(sizeof(Data))))
 		{
 			printf("tmp Data malloc fail!\n");
 			return result;
@@ -88,7 +86,7 @@ bool ForwHashDataApply(Dbio *dbio,HashLinkNode *node, DeltaItem *deltaItem)
 		readData(dbio, nodeNext->indexOffset, tmp);
 		//next data's field plus deltaItem's delta
 		DeltaItem *tmpWrite = NULL;
-		if(!(tmpWrite = (DeltaItem*)malloc(sizeof(DeltaItem))))
+		if (!(tmpWrite = (DeltaItem *)malloc(sizeof(DeltaItem))))
 		{
 			printf("tmpWrite DeltaItem malloc fail!\n");
 			return result;
@@ -96,21 +94,23 @@ bool ForwHashDataApply(Dbio *dbio,HashLinkNode *node, DeltaItem *deltaItem)
 		tmpWrite->key = deltaItem->key;
 		for (size_t i = 0; i < DATA_FIELD_NUM; i++)
 		{
-			tmpWrite->delta[i] =  tmp->field[i] + deltaItem->delta[i];
+			tmpWrite->delta[i] = tmp->field[i] + deltaItem->delta[i];
 		}
 		//write next node's data
-		writeData(dbio,tmpWrite,tmp->version);
-		nodeNext->indexOffset = dbio->indexPosition-1;
+		writeData(dbio, tmpWrite, tmp->version);
+		nodeNext->indexOffset = dbio->indexPosition - 1;
 		nodeNext = nodeNext->next;
+		result = true;
 	}
+	return result;
 }
 
-bool HashLinkInsert(Dbio *dbio,HashItem *hashList, uint64_t index, DeltaItem *deltaItem, uint64_t version)
+bool HashLinkInsert(Dbio *dbio, HashItem *hashList, uint64_t index, DeltaItem *deltaItem, uint64_t version)
 {
 	bool result = false;
 	//赋值为当前链表节点的前一个节点
-	HashLinkNode* bnode = NULL;
-	bnode = HashLinkFind(hashList[index].head,version);
+	HashLinkNode *bnode = NULL;
+	bnode = HashLinkFind(hashList[index].head, version);
 	//若存在比当前节点小的最大节点，则在该节点后插入当前节点
 	if (bnode)
 	{
@@ -118,15 +118,15 @@ bool HashLinkInsert(Dbio *dbio,HashItem *hashList, uint64_t index, DeltaItem *de
 		{
 			HashLinkNode *node = HashLinkNodeCreate(version);
 			node->next = bnode->next;
-			bnode->next = node; 
-			CurrHashDataApply(dbio,node,bnode,deltaItem);
-			ForwHashDataApply(dbio,node,deltaItem);
+			bnode->next = node;
+			CurrHashDataApply(dbio, node, bnode, deltaItem);
+			ForwHashDataApply(dbio, node, deltaItem);
 			result = true;
 		}
-		else if(bnode->version == version)
+		else if (bnode->version == version)
 		{
-			CurrHashDataApplyOnly(dbio,bnode,deltaItem);
-			ForwHashDataApply(dbio,bnode,deltaItem);
+			CurrHashDataApplyOnly(dbio, bnode, deltaItem);
+			ForwHashDataApply(dbio, bnode, deltaItem);
 			result = true;
 		}
 	}
@@ -137,8 +137,8 @@ bool HashLinkInsert(Dbio *dbio,HashItem *hashList, uint64_t index, DeltaItem *de
 		HashLinkNode *node = HashLinkNodeCreate(version);
 		node->next = hashList[index].head;
 		hashList[index].head = node;
-		CurrHashDataApplyOnly(dbio,node,deltaItem);
-		ForwHashDataApply(dbio,node,deltaItem);
+		CurrHashDataApplyOnly(dbio, node, deltaItem);
+		ForwHashDataApply(dbio, node, deltaItem);
 		result = true;
 	}
 	return result;
@@ -150,9 +150,9 @@ uint64_t HashGetPosition(uint64_t key)
 	index = key % HASH_PRIME_NUM;
 	if (index == 0)
 	{
-		index = HASH_LEN-1;
+		index = HASH_LEN - 1;
 	}
-	
+
 	return index;
 }
 
@@ -164,7 +164,7 @@ bool HashDirectInsert(Dbio *dbio, HashItem *hashList, DeltaItem *deltaItem, uint
 	{
 		hashList[index].key = deltaItem->key;
 		HashLinkNode *node = HashLinkNodeCreate(version);
-		CurrHashDataApplyOnly(dbio,node, deltaItem);
+		CurrHashDataApplyOnly(dbio, node, deltaItem);
 		node->next = hashList[index].head;
 		hashList[index].head = node;
 		result = true;
@@ -173,7 +173,7 @@ bool HashDirectInsert(Dbio *dbio, HashItem *hashList, DeltaItem *deltaItem, uint
 	//key相等的情况
 	else if (hashList[index].key == deltaItem->key)
 	{
-		result = HashLinkInsert(dbio,hashList, index, deltaItem, version);
+		result = HashLinkInsert(dbio, hashList, index, deltaItem, version);
 	}
 	return result;
 }
@@ -184,22 +184,22 @@ bool HashInsert(Dbio *dbio, HashItem *hashList, DeltaItem *deltaItem, uint64_t v
 	if (deltaItem->key == 0)
 	{
 		hashList[deltaItem->key].key = deltaItem->key;
-		result = HashLinkInsert(dbio,hashList,0,deltaItem,version);
+		result = HashLinkInsert(dbio, hashList, 0, deltaItem, version);
 		return result;
 	}
-	uint64_t index =  HashGetPosition(deltaItem->key);
-	result = HashDirectInsert(dbio, hashList, deltaItem, index,version);
-	if(result == false)
+	uint64_t index = HashGetPosition(deltaItem->key);
+	result = HashDirectInsert(dbio, hashList, deltaItem, index, version);
+	if (result == false)
 	{
 		for (size_t i = 1; i < HASH_LEN; i++)
 		{
 			uint64_t newIndex = (index + i) % HASH_LEN;
-			if(newIndex == 0)
+			if (newIndex == 0)
 			{
 				newIndex++;
 			}
-			result = HashDirectInsert(dbio,hashList, deltaItem, newIndex,version);
-			if(result == true)
+			result = HashDirectInsert(dbio, hashList, deltaItem, newIndex, version);
+			if (result == true)
 			{
 				break;
 			}
@@ -208,7 +208,7 @@ bool HashInsert(Dbio *dbio, HashItem *hashList, DeltaItem *deltaItem, uint64_t v
 	return result;
 }
 
-bool HashSearchNode(Dbio *dbio, HashItem *hashList,uint64_t index, uint64_t version, Data &data)
+bool HashSearchNode(Dbio *dbio, HashItem *hashList, uint64_t index, uint64_t version, Data &data)
 {
 	bool result = false;
 	HashLinkNode *node = HashLinkFind(hashList[index].head, version);
@@ -216,7 +216,7 @@ bool HashSearchNode(Dbio *dbio, HashItem *hashList,uint64_t index, uint64_t vers
 	{
 		//get node's data's field
 		Data *tmp = NULL;
-		if(!(tmp = (Data*)malloc(sizeof(Data))))
+		if (!(tmp = (Data *)malloc(sizeof(Data))))
 		{
 			printf("tmp Data malloc fail!\n");
 			return result;
@@ -250,7 +250,7 @@ bool HashSearchNode(Dbio *dbio, HashItem *hashList,uint64_t index, uint64_t vers
 // 	return result;
 // }
 
-bool HashSearch(Dbio *dbio,HashItem *hashList, uint64_t key, uint64_t version, Data &data)
+bool HashSearch(Dbio *dbio, HashItem *hashList, uint64_t key, uint64_t version, Data &data)
 {
 	bool result = false;
 	if (key == 0)
@@ -273,7 +273,7 @@ bool HashSearch(Dbio *dbio,HashItem *hashList, uint64_t key, uint64_t version, D
 		for (size_t i = 1; i < HASH_LEN; i++)
 		{
 			uint64_t newIndex = (index + i) % HASH_LEN;
-			if(newIndex == 0)
+			if (newIndex == 0)
 			{
 				newIndex++;
 			}
@@ -291,12 +291,12 @@ bool HashSearch(Dbio *dbio,HashItem *hashList, uint64_t key, uint64_t version, D
 	return result;
 }
 
-bool HashLinkInit(Dbio *dbio,HashItem *hashList, uint64_t index, uint64_t offset)
+bool HashLinkInit(Dbio *dbio, HashItem *hashList, uint64_t index, uint64_t offset)
 {
 	bool result = false;
 	//赋值为当前链表节点的前一个节点
-	HashLinkNode* bnode = NULL;
-	bnode = HashLinkFind(hashList[index].head,dbio->indexList[offset].version);
+	HashLinkNode *bnode = NULL;
+	bnode = HashLinkFind(hashList[index].head, dbio->indexList[offset].version);
 	//若存在比当前节点小的最大节点，则在该节点后插入当前节点
 	if (bnode)
 	{
@@ -304,11 +304,11 @@ bool HashLinkInit(Dbio *dbio,HashItem *hashList, uint64_t index, uint64_t offset
 		{
 			HashLinkNode *node = HashLinkNodeCreate(dbio->indexList[offset].version);
 			node->next = bnode->next;
-			bnode->next = node; 
+			bnode->next = node;
 			node->indexOffset = offset;
 			result = true;
 		}
-		else if(bnode->version == dbio->indexList[offset].version)
+		else if (bnode->version == dbio->indexList[offset].version)
 		{
 			bnode->indexOffset = offset;
 			result = true;
@@ -344,7 +344,7 @@ bool HashDirectInit(Dbio *dbio, HashItem *hashList, uint64_t index, uint64_t off
 	//key相等的情况
 	else if (hashList[index].key == dbio->indexList[offset].key)
 	{
-		result = HashLinkInit(dbio,hashList, index, offset);
+		result = HashLinkInit(dbio, hashList, index, offset);
 	}
 	return result;
 }
@@ -355,22 +355,22 @@ bool HashItemInit(Dbio *dbio, HashItem *hashList, uint64_t offset)
 	if (dbio->indexList[offset].key == 0)
 	{
 		hashList[0].key = dbio->indexList[offset].key;
-		result =HashLinkInit(dbio,hashList,0,offset);
+		result = HashLinkInit(dbio, hashList, 0, offset);
 		return result;
 	}
-	uint64_t index =  HashGetPosition(dbio->indexList[offset].key);
+	uint64_t index = HashGetPosition(dbio->indexList[offset].key);
 	result = HashDirectInit(dbio, hashList, index, offset);
-	if(result == false)
+	if (result == false)
 	{
 		for (size_t i = 1; i < HASH_LEN; i++)
 		{
 			uint64_t newIndex = (index + i) % HASH_LEN;
-			if(newIndex == 0)
+			if (newIndex == 0)
 			{
 				newIndex++;
 			}
 			result = HashDirectInit(dbio, hashList, index, offset);
-			if(result == true)
+			if (result == true)
 			{
 				break;
 			}
@@ -386,4 +386,5 @@ bool hashInit(Dbio *dbio, HashItem *hashList)
 	{
 		HashItemInit(dbio, hashList, offset);
 	}
+	return true;
 }

@@ -1,5 +1,5 @@
 #include "hash.h"
-#include <string.h>
+
 
 HashLinkNode* HashLinkNodeCreate(uint64_t key, uint64_t version)
 {
