@@ -1,3 +1,6 @@
 src/test
 test_data/
 src/student.zip
+build/
+.DS_Store
+dbio/
