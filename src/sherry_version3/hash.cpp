@@ -441,7 +441,7 @@ int main()
 	HashSearch(hashIo, hashlist,d1->key,version1,da1);
 	for (size_t a = 0; a < 64; a++)
 	{
-		printf("DA1  key:%ld, version:%ld, index:%ld, field:%ld\n",da1.key,da1.version,a,da1.field[a]);
+		//printf("DA1  key:%ld, version:%ld, index:%ld, field:%ld\n",da1.key,da1.version,a,da1.field[a]);
 	}
 	printf("dbio's indexPosition: %ld, catchPosition: %ld, dataPosition: %ld\n",hashIo->indexPosition,hashIo->catchePosition, hashIo->dataPosition);
 	printf("------------insert d2----------------\n");
@@ -450,7 +450,7 @@ int main()
 	HashSearch(hashIo, hashlist,d2->key,version2,da2);
 	for (size_t b = 0; b < 64; b++)
 	{
-		printf("DA2  key:%ld, version:%ld, index:%ld, field:%ld\n",da2.key,da2.version,b,da2.field[b]);
+		//printf("DA2  key:%ld, version:%ld, index:%ld, field:%ld\n",da2.key,da2.version,b,da2.field[b]);
 	}
 	printf("dbio's indexPosition: %ld, catchPosition: %ld, dataPosition: %ld\n",hashIo->indexPosition,hashIo->catchePosition, hashIo->dataPosition);
 	printf("------------insert d3----------------\n");
@@ -459,7 +459,7 @@ int main()
 	HashSearch(hashIo, hashlist,d3->key,version3,da3);
 	for (size_t c = 0; c < 64; c++)
 	{
-		printf("DA3  key:%ld, version:%ld, index:%ld, field:%ld\n",da3.key,da3.version,c,da3.field[c]);
+		//printf("DA3  key:%ld, version:%ld, index:%ld, field:%ld\n",da3.key,da3.version,c,da3.field[c]);
 	}
 	printf("dbio's indexPosition: %ld, catchPosition: %ld, dataPosition: %ld\n",hashIo->indexPosition,hashIo->catchePosition, hashIo->dataPosition);
 	printf("------------insert d4----------------\n");
@@ -495,6 +495,7 @@ int main()
 	// readData(hashIo,4,rdata4);
 	// readData(hashIo,5,rdata5);
 	// readData(hashIo,6,rdata6);
+	/*
 	for (size_t aa = 0; aa < 64; aa++)
 	{
 		printf("rdata0  key:%ld, version:%ld, index:%ld, field:%ld\n",rdata0->key,rdata0->version,aa,rdata0->field[aa]);
@@ -523,4 +524,5 @@ int main()
 	{
 		printf("rdata6  key:%ld, version:%ld, index:%ld, field:%ld\n",rdata6->key,rdata6->version,gg,rdata6->field[gg]);
 	}
+	*/
 }
