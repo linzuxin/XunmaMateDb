@@ -4,4 +4,4 @@ mkdir build
 cd build
 cmake ..
 make
-./meta_tester
+./meta_tester ./libmeta_mgr.so ./data
