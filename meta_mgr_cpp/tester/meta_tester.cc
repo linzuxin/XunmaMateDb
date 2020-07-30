@@ -162,17 +162,17 @@ int MetaTester::read(std::shared_ptr<StoreIntf> stor) {
     Data data;
     if (stor->ReadDataByVersion(10086, i, data)) {
       err = 0;
-      LOG(INFO) << "get data by key= " << 10086
-                << " final result: key=" << data.key
-                << ", version=" << data.version
-                << ", field[0] = " << data.field[0]
-                << ", field[3] = " << data.field[3]
-                << ", field[7] = " << data.field[7]
-                << ", field[10] = " << data.field[10];
+      // LOG(INFO) << "get data by key= " << 10086
+      //           << " final result: key=" << data.key
+      //           << ", version=" << data.version
+      //           << ", field[0] = " << data.field[0]
+      //           << ", field[3] = " << data.field[3]
+      //           << ", field[7] = " << data.field[7]
+      //           << ", field[10] = " << data.field[10];
     } else {
       err = -1;
-      LOG(ERROR) << "get data by key=" << 10086 << ", version=" << i
-                 << " failed";
+      // LOG(ERROR) << "get data by key=" << 10086 << ", version=" << i
+      //            << " failed";
     }
   }
   return err;

@@ -23,14 +23,10 @@ int createDoc(const char *dir, const char *filename, uint64_t dataSize)
     printf("datapath: %s\n", dataPath);
     //create and open file writable & readable
     int fd = open(dataPath, O_CREAT | O_RDWR | O_TRUNC, 00777);
-    void *data = malloc(sizeof(Data));
-    lseek(fd, dataSize - sizeof(Data), SEEK_CUR);
-    write(fd, data, sizeof(Data));
-    free(data);
-    // //allocate space
-    // fallocate(fd,0,0,dataSize);
-    // //trim purplus space
-    // ftruncate(fd,dataSize);
+    //allocate space
+    fallocate(fd,0,0,dataSize);
+    //trim purplus space
+    ftruncate(fd,dataSize);
     return fd;
 }
 
