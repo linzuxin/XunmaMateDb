@@ -18,9 +18,9 @@ public:
 protected:
   void *loadSo(const char *path, const char *entry);
 
-  int write(std::shared_ptr<StoreIntf> stor);
+  int write(std::shared_ptr<StoreIntf> stor,int thread_index);
 
-  int read(std::shared_ptr<StoreIntf> stor);
+  int read(std::shared_ptr<StoreIntf> stor,int thread_index);
 
   int runJobWrite(int thread_num);
   int runJobRead(int thread_num);
