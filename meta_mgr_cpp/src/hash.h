@@ -8,18 +8,18 @@
 #define NULLKEY 0
 
 //hash表中元素指向的链表节点
-typedef struct HashLinkNode
+struct HashLinkNode
 {
 	Data data;
 	HashLinkNode *next;
-} HashLinkNode;
+} ;
 
 //hash表元素
-typedef struct HashTable
+struct HashTable
 {
 	uint64_t key;
 	HashLinkNode *head;
-} HashTable;
+};
 
 HashLinkNode *CreateHashLinkNode(const DeltaItem *deltaItem, uint64_t version);
 HashLinkNode *HashLinkFind(HashLinkNode *head, uint64_t version);
