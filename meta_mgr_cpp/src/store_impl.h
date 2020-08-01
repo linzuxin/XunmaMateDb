@@ -2,9 +2,12 @@
 #include <memory>
 #include <mutex>
 #include "store_intf.h"
+#include "profile.h"
+#include "hash.h"
 
 class StoreImpl : public StoreIntf,
-                  public std::enable_shared_from_this<StoreImpl> {
+                  public std::enable_shared_from_this<StoreImpl>
+{
 public:
   bool Init(const char *dir);
 
@@ -18,4 +21,6 @@ public:
 
 private:
   std::mutex mutex_;
+  HashTable hashList[HASH_LEN];
+  Profile *profile;
 };
