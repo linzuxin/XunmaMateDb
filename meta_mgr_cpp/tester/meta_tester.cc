@@ -333,7 +333,7 @@ int MetaTester::read(std::shared_ptr<StoreIntf> stor, int thread_index)
     else
     {
       err = -1;
-      LOG(ERROR) << "get data by key=" << 10086 << ", version=" << i
+      LOG(ERROR) << "get data by key=" << j + thread_index * deltaCount << ", version=" << global_version
                  << " failed";
     }
   }
