@@ -1,6 +1,6 @@
 #pragma once
 #include <stdio.h>
-#include "common.h"
+#include "store_intf.h"
 #include <string.h>
 
 #define HASH_LEN 80000
