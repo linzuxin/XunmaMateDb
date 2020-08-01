@@ -16,6 +16,7 @@ using std::chrono::duration_cast;
 using std::chrono::system_clock;
 static std::atomic<uint64_t> global_version{0};
 static std::unordered_map<uint64_t, std::vector<DeltaItem>> tree;
+uint16_t deltaCount = 10;
 
 bool comdata(Data &data, Data &data1)
 {
@@ -275,16 +276,16 @@ int MetaTester::write(std::shared_ptr<StoreIntf> stor, int thread_index)
   }
   /////////////////////////////////////////////////////////////////////////////
   int err = 0;
-  uint16_t delta_count = 10;
+
   DeltaPacket *packet =
-      (DeltaPacket *)malloc(sizeof(DeltaPacket) + delta_count * sizeof(DeltaItem));
+      (DeltaPacket *)malloc(sizeof(DeltaPacket) + deltaCount * sizeof(DeltaItem));
 
   packet->version = ++global_version;
 
-  packet->delta_count = delta_count;
+  packet->delta_count = deltaCount;
   for (int j = 0; j < packet->delta_count; j++)
   {
-    packet->deltas[j].key = j + thread_index * delta_count;
+    packet->deltas[j].key = j + thread_index * deltaCount;
     packet->deltas[j].delta[0] = j;
     packet->deltas[j].delta[1] = 1;
     packet->deltas[j].delta[3] = 1;
@@ -315,19 +316,19 @@ int MetaTester::write(std::shared_ptr<StoreIntf> stor, int thread_index)
 int MetaTester::read(std::shared_ptr<StoreIntf> stor, int thread_index)
 {
   int err = 0;
-  for (uint64_t i = 0; i <= global_version; i++)
+  for (int j = 0; j < deltaCount; j++)
   {
     Data data;
-    if (stor->ReadDataByVersion(10086, i, data))
+    if (stor->ReadDataByVersion(j + thread_index * deltaCount, global_version, data))
     {
       err = 0;
-      // LOG(INFO) << "get data by key= " << 10086
-      //           << " final result: key=" << data.key
-      //           << ", version=" << data.version
-      //           << ", field[0] = " << data.field[0]
-      //           << ", field[3] = " << data.field[3]
-      //           << ", field[7] = " << data.field[7]
-      //           << ", field[10] = " << data.field[10];
+      LOG(INFO) << "get data by key= " << 10086
+                << " final result: key=" << data.key
+                << ", version=" << data.version
+                << ", field[0] = " << data.field[0]
+                << ", field[3] = " << data.field[3]
+                << ", field[7] = " << data.field[7]
+                << ", field[10] = " << data.field[10];
     }
     else
     {
@@ -335,6 +336,10 @@ int MetaTester::read(std::shared_ptr<StoreIntf> stor, int thread_index)
       // LOG(ERROR) << "get data by key=" << 10086 << ", version=" << i
       //            << " failed";
     }
+  }
+  for (uint64_t i = 0; i <= global_version; i++)
+  {
+    
   }
   return err;
 }
