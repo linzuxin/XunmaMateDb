@@ -15,7 +15,7 @@ using std::chrono::duration;
 using std::chrono::duration_cast;
 using std::chrono::system_clock;
 static std::atomic<uint64_t> global_version{0};
-std::unordered_map<uint64_t, std::vector<DeltaItem>> tree;
+static std::unordered_map<uint64_t, std::vector<DeltaItem>> tree;
 
 bool comdata(Data &data, Data &data1)
 {
