@@ -145,7 +145,7 @@ double MetaTester::Run(int &err)
   rets.resize(thread_num);
   auto begin = system_clock::now();
   // for write
-  thread_num = 1;
+  thread_num = 2;
   for (int i = 0; i < thread_num; i++)
   {
     std::packaged_task<int()> task(std::bind(&MetaTester::runJobWrite, this, i));
@@ -322,13 +322,13 @@ int MetaTester::read(std::shared_ptr<StoreIntf> stor, int thread_index)
     if (stor->ReadDataByVersion(j + thread_index * deltaCount, global_version, data))
     {
       err = 0;
-      LOG(INFO) << "get data by key= " << j + thread_index * deltaCount
-                << " final result: key=" << data.key
-                << ", version=" << data.version
-                << ", field[0] = " << data.field[0]
-                << ", field[3] = " << data.field[3]
-                << ", field[7] = " << data.field[7]
-                << ", field[10] = " << data.field[10];
+      // LOG(INFO) << "get data by key= " << j + thread_index * deltaCount
+      //           << " final result: key=" << data.key
+      //           << ", version=" << data.version
+      //           << ", field[0] = " << data.field[0]
+      //           << ", field[3] = " << data.field[3]
+      //           << ", field[7] = " << data.field[7]
+      //           << ", field[10] = " << data.field[10];
     }
     else
     {
