@@ -20,13 +20,23 @@ int createDoc(const char *dir, const char *filename, uint64_t dataSize)
     char dataPath[256] = " ";
     //combine dir with filename
     sprintf(dataPath, "%s/%s", dir, filename);
-    printf("datapath: %s\n", dataPath);
-    //create and open file writable & readable
-    int fd = open(dataPath, O_CREAT | O_RDWR | O_TRUNC, 00777);
-    //allocate space
-    fallocate(fd,0,0,dataSize);
-    //trim purplus space
-    ftruncate(fd,dataSize);
+    int accessresult = access(dataPath, 0);
+    int fd = 0;
+    if (accessresult == -1)
+    {
+        printf("createDoc datapath: %s\n", dataPath);
+        //create and open file writable & readable
+        fd = open(dataPath, O_CREAT | O_RDWR | O_TRUNC, 00777);
+        //allocate space
+        fallocate(fd, 0, 0, dataSize);
+        //trim purplus space
+        ftruncate(fd, dataSize);
+    }
+    else
+    {
+        printf("createDoc datapath open: %s\n", dataPath);
+        fd = open(dataPath, O_RDWR);
+    }
     return fd;
 }
 
