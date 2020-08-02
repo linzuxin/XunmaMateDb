@@ -3,6 +3,7 @@
 #include <mutex>
 #include "store_intf.h"
 #include "profile.h"
+#include "dbio.h"
 #include "hash.h"
 
 class StoreImpl : public StoreIntf,
@@ -23,4 +24,5 @@ private:
   std::mutex mutex_;
   HashTable hashList[HASH_LEN];
   Profile *profile;
+  Dbio *dbio;
 };

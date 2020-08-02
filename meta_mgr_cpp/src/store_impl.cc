@@ -6,7 +6,9 @@ bool StoreImpl::Init(const char *dir)
   std::lock_guard<std::mutex> lock(mutex_);
   //Init data_mgr
   //Init meta_mgr
+
   profile = initProfile();
+  dbio = initDbio(dir);
   memset(&hashList, 0, sizeof(HashTable) * HASH_LEN);
   return true;
 }

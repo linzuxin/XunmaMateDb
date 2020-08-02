@@ -4,6 +4,7 @@ PROJECT(meta_mgr)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 SET(SRC_BASE ${PROJECT_SOURCE_DIR})
 SET(SRC_CPP
+	${SRC_BASE}/dbio.cpp
 	${SRC_BASE}/hash.cpp
 	${SRC_BASE}/profile.cpp
 	${SRC_BASE}/store_intf.cc
