@@ -97,7 +97,7 @@ bool writeData(Dbio *dbio, DeltaItem *deltaItem, uint64_t version)
         ssize_t presult = pwrite(dbio->fdData, dbio->catcheList, CATCHE_FILE_SIZE * sizeof(Data), dbio->dataPosition);
         if (presult < 0)
         {
-            printf("error pwrite:%d\n", presult);
+            printf("error pwrite:%lu\n", presult);
         }
         dbio->dataPosition += CATCHE_FILE_SIZE;
         dbio->catchePosition = 0;
@@ -154,7 +154,7 @@ bool readData(Dbio *dbio, uint64_t offset, Data *data)
             ssize_t presult = pread(dbio->fdData, data, sizeof(Data), sizeof(Data) * offset);
             if (presult < 0)
             {
-                printf("error pread:%d\n", presult);
+                printf("error pread:%lu\n", presult);
             }
             result = true;
         }
