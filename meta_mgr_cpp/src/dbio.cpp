@@ -30,7 +30,11 @@ int createDoc(const char *dir, const char *filename, uint64_t dataSize)
         //allocate space
         fallocate(fd, 0, 0, dataSize);
         //trim purplus space
-        ftruncate(fd, dataSize);
+        int fresult = ftruncate(fd, dataSize);
+        if (fresult < 0)
+        {
+            printf("error ftruncate:%d,%s\n", fresult, dataPath);
+        }
     }
     else
     {
@@ -90,7 +94,11 @@ bool writeData(Dbio *dbio, DeltaItem *deltaItem, uint64_t version)
     //if catche file is full ,write catche into datafile and clear catche
     if (dbio->catchePosition >= CATCHE_FILE_SIZE)
     {
-        pwrite(dbio->fdData, dbio->catcheList, CATCHE_FILE_SIZE * sizeof(Data), dbio->dataPosition);
+        ssize_t presult = pwrite(dbio->fdData, dbio->catcheList, CATCHE_FILE_SIZE * sizeof(Data), dbio->dataPosition);
+        if (presult < 0)
+        {
+            printf("error pwrite:%d\n", presult);
+        }
         dbio->dataPosition += CATCHE_FILE_SIZE;
         dbio->catchePosition = 0;
         printf("catche clear\n");
@@ -143,7 +151,11 @@ bool readData(Dbio *dbio, uint64_t offset, Data *data)
         else
         {
             printf("enter second else\n");
-            pread(dbio->fdData, data, sizeof(Data), sizeof(Data) * offset);
+            ssize_t presult = pread(dbio->fdData, data, sizeof(Data), sizeof(Data) * offset);
+            if (presult < 0)
+            {
+                printf("error pread:%d\n", presult);
+            }
             result = true;
         }
     }
