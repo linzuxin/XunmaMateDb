@@ -7,7 +7,8 @@
 #include <unistd.h>
 #include <string.h>
 
-#define DATA_FILE_SIZE 64000000
+#define DATA_FILE_COUNT 1
+#define DATA_FILE_SIZE 6400 * DATA_FILE_COUNT
 #define CATCHE_FILE_SIZE 100
 
 struct IndexNode
