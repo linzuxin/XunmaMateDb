@@ -46,7 +46,7 @@ int createDir(const char *dir);
 int createDoc(const char *dir, const char *filename, uint64_t dataSize);
 void *createMap(int fd, size_t len);
 Dbio *initDbio(const char *dir);
-char* loadZeroNode(const char *dir, const char *filename);
+char *loadZeroNode(const char *dir, const char *filename);
 void deinitDbio(Dbio *);
 bool writeData(Dbio *dbio, const DeltaItem *deltaItem, uint64_t version);
 bool readData(Dbio *dbio, uint64_t offset, Data *data);
