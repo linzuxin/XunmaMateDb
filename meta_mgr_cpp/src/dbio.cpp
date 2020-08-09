@@ -50,6 +50,33 @@ void *createMap(int fd, size_t len)
     return head;
 }
 
+char *loadZeroNode(const char *dir, const char *filename)
+{
+    char dataPath[256] = " ";
+    //combine dir with filename
+    sprintf(dataPath, "%s/%s", dir, filename);
+    int accessresult = access(dataPath, 0);
+    char *ZeroText = NULL;
+    if (accessresult == -1)
+    {
+        printf("loadZeroNode datapath: %s\n", dataPath);
+    }
+    else
+    {
+        printf("loadZeroNode datapath: %s\n", dataPath);
+
+        FILE *fd = fopen(dataPath, "r");
+        fseek(fd, 0, SEEK_END);
+        long lSize = ftell(fd);
+        ZeroText = (char *)malloc(lSize + 1);
+        rewind(fd);
+        fread(ZeroText, sizeof(char), lSize, fd);
+        ZeroText[lSize] = '\0';
+        fclose(fd);
+    }
+    return ZeroText;
+}
+
 Dbio *initDbio(const char *dir)
 {
     //create dbio's pointer for storing datafile catchefile indexfile
@@ -60,17 +87,35 @@ Dbio *initDbio(const char *dir)
     dbio->fdData = createDoc(dir, "dataFile", DATA_FILE_SIZE * sizeof(Data));
     dbio->dataPosition = 0;
     //create & open catcheflie
-    int fdCatche = createDoc(dir, "catcheFile", CATCHE_FILE_SIZE * sizeof(Data));
-    dbio->catcheList = (Data *)createMap(fdCatche, CATCHE_FILE_SIZE * sizeof(Data));
+    dbio->fdCatche = createDoc(dir, "catcheFile", CATCHE_FILE_SIZE * sizeof(Data));
+    dbio->catcheList = (Data *)createMap(dbio->fdCatche, CATCHE_FILE_SIZE * sizeof(Data));
     dbio->catchePosition = 0;
     //create & open indexfile
-    int fdIndex = createDoc(dir, "indexFile", DATA_FILE_SIZE * sizeof(IndexNode));
-    dbio->indexList = (IndexNode *)createMap(fdIndex, DATA_FILE_SIZE * sizeof(IndexNode));
+    dbio->fdIndex = createDoc(dir, "indexFile", DATA_FILE_SIZE * sizeof(IndexNode));
+    dbio->indexList = (IndexNode *)createMap(dbio->fdIndex, DATA_FILE_SIZE * sizeof(IndexNode));
     dbio->indexPosition = 0;
+
+    dbio->zeroNode = (ZeroNode *)loadZeroNode(dir, "zeroFile");
     return dbio;
 }
 
-bool writeData(Dbio *dbio, DeltaItem *deltaItem, uint64_t version)
+void deinitDbio(Dbio *dbio)
+{
+    if (dbio->zeroNode)
+    {
+        free(dbio->zeroNode);
+        dbio->zeroNode = NULL;
+    }
+    munmap(dbio->catcheList, CATCHE_FILE_SIZE * sizeof(Data));
+    munmap(dbio->indexList, DATA_FILE_SIZE * sizeof(IndexNode));
+    close(dbio->fdData);
+    close(dbio->fdIndex);
+    close(dbio->fdCatche);
+    free(dbio);
+    dbio = NULL;
+}
+
+bool writeData(Dbio *dbio, const DeltaItem *deltaItem, uint64_t version)
 {
     bool result = false;
     if (!deltaItem)

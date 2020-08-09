@@ -29,6 +29,7 @@ bool StoreImpl::WriteDeltaPacket(const DeltaPacket &packet)
   setDataVersion(profile, packet.version);
   for (uint16_t i = 0; i < packet.delta_count; ++i)
   {
+    writeData(dbio, &packet.deltas[i], packet.version);
     result = HashInsert(hashList, &packet.deltas[i], packet.version);
   }
   return result;
