@@ -1,10 +1,3 @@
-#include <sys/types.h>    
-#include <sys/stat.h>  
-#include <sys/mman.h>  
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include "common.h"
 #include "dbio.h"
 
 int createDir(const char *dir)
@@ -141,65 +134,4 @@ bool readIO(Dbio *dbio, uint64_t offset, DeltaItem *deltaItem)
 void readZero(Dbio *dbio,DeltaItem *deltaItem)
 {
     pread(dbio->fdZero,deltaItem,sizeof(DeltaItem),0);
-}
-
-
-
-int main(int argc, char **argv)
-{
-    // int result1 = createDir("testdir");
-    // int result2 = createDir("testdir");
-    // printf("result1:%d,result2:%d\n",result1,result2);
-    // int docResult1 = createDoc("testdir","file",sizeof(int)*2);
-    // printf("docResult1:%d,\n",docResult1);
-    // int content[2] = {1,2};
-    // size_t r1 = pwrite(docResult1,content,sizeof(int)*2,0);
-    // printf("write result:%ld\n",r1);
-    // int readResult[3]={};
-    // pread(docResult1,readResult,sizeof(int)*2,0);
-    // for (size_t i = 0; i < 3; i++)
-    // {
-    //     printf("readResult: index:%ld, value:%d\n",i,readResult[i]);
-    // }
-    // int content1[3] = {11,22,33};
-    // size_t r2 = pwrite(docResult1,content1,sizeof(int)*3,0);
-    // printf("write result:%ld\n",r2);
-    // pread(docResult1,readResult,sizeof(int)*3,0);
-    // for (size_t i = 0; i < 3; i++)
-    // {
-    //     printf("readResult: index:%ld, value:%d\n",i,readResult[i]);
-    // }
-    // int *map = (int*)createMap(docResult1,sizeof(int)*2);
-    // for (size_t i = 0; i < 3; i++)
-    // {
-    //     printf("mapResult: index:%ld, value:%d\n",i,map[i]);
-    // }
-    printf("size of indexNode:%ld, size of DeltaItem:%ld\n",sizeof(IndexNode),sizeof(DeltaItem));
-    Dbio *dbio = initDbio("dbio");
-    DeltaItem d1 = {};
-    DeltaItem *dr = (DeltaItem*)malloc(sizeof(DeltaItem));
-    for (size_t i = 0; i < 130; i++)
-    {
-        d1.key = i;
-        for (size_t j = 0; j < 64; j++)
-        {
-            d1.delta[j] = i+1;
-        }
-        writeIO(dbio,d1,i); 
-    }
-    printf("index position:%ld, delta position:%ld, catche position:%ld\n",dbio->indexPosition,dbio->deltaPosition,dbio->catchePosition);
-    for (size_t i = 0; i < 140; i++)
-    {
-        bool result = readIO(dbio,i,dr);
-
-        printf("count:%ld,result:%d,key:%ld,delta value:%d\n",i,result,dr->key,dr->delta[1]);
-    }
-    printf("dbio's last:    catch key:%ld,catch delta:%d,index key:%ld,index version:%ld\n",dbio->catcheList[dbio->catchePosition-1].key,dbio->catcheList[dbio->catchePosition-1].delta[0],dbio->indexList[dbio->indexPosition-1].key,dbio->indexList[dbio->indexPosition-1].version);
-    pread(dbio->fdZero,dr,sizeof(DeltaItem),0);
-    printf("-------------zero---------\n");
-    for (size_t i = 0; i < 64; i++)
-    {
-        printf("key:%ld,delta index:%ld,delta value:%d\n",dr->key,i,dr->delta[i]);
-    }
-    
 }

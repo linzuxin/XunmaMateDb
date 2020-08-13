@@ -3,6 +3,7 @@
 #include <mutex>
 #include "common.h"
 #include "hash.h"
+#include "dbio.h"
 
 
 class StoreImpl : public StoreIntf,

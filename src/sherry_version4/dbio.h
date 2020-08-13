@@ -1,5 +1,13 @@
 #pragma once
 #include "allocate.h"
+#include "common.h"
+#include <sys/types.h>    
+#include <sys/stat.h>  
+#include <sys/mman.h>  
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
 
 typedef struct IndexNode
 {

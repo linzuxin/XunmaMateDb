@@ -1,7 +1,5 @@
 #include "store_impl.h"
 #include "replay.h"
-#include <string.h>
-#include "dbio.h"
 
 bool StoreImpl::Init(const char *dir) 
 {
