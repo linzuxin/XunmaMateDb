@@ -2,6 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <sys/types.h>    
+#include <sys/stat.h>  
+#include <sys/mman.h>  
+#include <fcntl.h>
+#include <unistd.h>
+
 HashNode_64* hashInit()
 {
     HashNode_64 *hashList = (HashNode_64*)malloc(sizeof(HashNode_64)*HASH_LEN);
@@ -250,7 +256,7 @@ bool readData(Dbio *dbio, HashNode_64 *hashList,uint64_t key, uint64_t version, 
     DeltaItem *singleDelta = (DeltaItem*)malloc(sizeof(DeltaItem));
     uint64_t *applyList = (uint64_t*)malloc(sizeof(uint64_t)*VERSIONCOUNT);
     int versionCount = hashSearch(hashList,key,version,applyList);
-    if(versionCount == 0);
+    if((versionCount == 0) && (key != 0 || version !=0));
     else
     {
         for (i = 0; i < versionCount; i++)
@@ -284,56 +290,134 @@ bool readData(Dbio *dbio, HashNode_64 *hashList,uint64_t key, uint64_t version, 
 // {
 //     Dbio *hashio = initDbio("hashio");
 //     HashNode_64 *hashlist = hashInit();
-//     DeltaPacket packet1, packet2, packet3, packet4;
-
+//     DeltaPacket packet1 = {};
+//     DeltaPacket packet2 = {};
+//     DeltaPacket packet3 = {};
+//     DeltaPacket packet4 = {};
+//     size_t i,j;
+//     printf("--------------------packet1----------version 0,key 0-44\n");
 //     packet1.version = 0;
-//     packet1.delta_count = 65;
-//     for (size_t i = 0; i < packet1.delta_count; i++)
+//     packet1.delta_count = 45;
+//     printf("p1 deltacount: %d, version: %ld\n",packet1.delta_count,packet1.version);
+//     for (i = 0; i < packet1.delta_count; i++)
 //     {
+//         printf("i:%ld\n",i);
 //         packet1.deltas[i].key = i;
-//         for (size_t j = 0; j < 64; j++)
+//         printf("    packet1.deltas[%ld].key:%ld\n",i,packet1.deltas[i].key);
+//         for (j = 0; j < 64; j++)
 //         {
-//             packet1.deltas[i].delta[i] = i*100+1;
+//             packet1.deltas[i].delta[j] = i*100+1;
 //         }
-        
+//         printf("    packet1.deltas[%ld].delta:%d\n",i,packet1.deltas[i].delta[63]);
 //     }
-
+//     printf("--------------------packet2----------version 50,key 0-44\n");
 //     packet2.version = 50;
-//     packet2.delta_count = 130;
-//     for (size_t i = packet2.delta_count; i > 0; i--)
+//     packet2.delta_count = 45;
+//     printf("p2 deltacount: %d, version: %ld\n",packet2.delta_count,packet2.version);
+//     for (i = 0; i < packet2.delta_count; i++)
 //     {
+//         printf("i:%ld\n",i);
 //         packet2.deltas[i].key = i;
-//         for (size_t j = 0; j < 64; j++)
+//         printf("    packet2.deltas[%ld].key:%ld\n",i,packet2.deltas[i].key);
+//         for (j = 0; j < 64; j++)
 //         {
-//             packet2.deltas[i].delta[i] = i*100+1;
+//             packet2.deltas[i].delta[j] = i*100+1;
 //         }
+//         printf("    packet2.deltas[%ld].delta:%d\n",i,packet2.deltas[i].delta[63]);
         
 //     }
-
+//     printf("--------------------packet3----------version 15,key 25-69\n");
 //     packet3.version = 15;
-//     packet3.delta_count = 130;
-//     for (size_t i = 0; i <= packet3.delta_count; i++)
+//     packet3.delta_count = 45;
+//     int count = 25;
+//     printf("p3 deltacount: %d, version: %ld\n",packet3.delta_count,packet3.version);
+//     for (size_t i = 0; i < packet3.delta_count; i++)
 //     {
-//         packet3.deltas[i].key = i;
+//         printf("i:%ld\n",i);
+//         packet3.deltas[i].key = count;
+//         printf("    packet3.deltas[%ld].key:%ld\n",i,packet3.deltas[i].key);
 //         for (size_t j = 0; j < 64; j++)
 //         {
-//             packet3.deltas[i].delta[i] = i*100+1;
+//             packet3.deltas[i].delta[j] = count*100+1;
 //         }
+//         count++;
+//         printf("    packet3.deltas[%ld].delta:%d\n",i,packet3.deltas[i].delta[63]);
 //     }
-
+//     printf("--------------------packet4----------version 95,key 0-44\n");
 //     packet4.version = 95;
-//     packet4.delta_count = 130;
-//     for (size_t i = 0; i <= packet4.delta_count; i++)
+//     packet4.delta_count = 45;
+//     printf("p4 deltacount: %d, version: %ld\n",packet4.delta_count,packet4.version);
+//     for (size_t i = 0; i < packet4.delta_count; i++)
 //     {
+//         printf("i:%ld\n",i);
 //         packet4.deltas[i].key = i;
+//         printf("    packet4.deltas[%ld].key:%ld\n",i,packet4.deltas[i].key);
 //         for (size_t j = 0; j < 64; j++)
 //         {
-//             packet4.deltas[i].delta[i] = i*100+1;
+//             packet4.deltas[i].delta[j] = i*100+1;
 //         }
+//         printf("    packet4.deltas[%ld].delta:%d\n",i,packet4.deltas[i].delta[63]);
 //     }
-
+    
 //     bool wr1 = writeData(hashio,hashlist,packet1);
-//     printf("write result:%d\n",wr1);    
+//     bool wr2 = writeData(hashio,hashlist,packet2);
+//     bool wr3 = writeData(hashio,hashlist,packet3);
+//     bool wr4 = writeData(hashio,hashlist,packet4);
+//     printf("write result  1:%d  2:%d  3:%d  4:%d\n",wr1,wr2,wr3,wr4);
+//     printf("-----indexList-----\n"); 
+//     for (i = 0; i < hashio->indexPosition; i++)
+//     {
+//         printf("key:%ld,version:%ld\n",hashio->indexList[i].key,hashio->indexList[i].version);
+//     }
+//     printf("-----deltaFile-----\n"); 
+//     DeltaItem *fileList = (DeltaItem*)malloc(sizeof(DeltaItem)*150);
+//     pread(hashio->fdDelta,fileList,sizeof(DeltaItem)*hashio->deltaPosition,0);
+//     for (i = 0; i < 150; i++)
+//     {
+//         printf("i:%ld, key:%ld, delta:%d\n",i,fileList[i].key,fileList[i].delta[63]);
+//     }
+//     printf("-----catchFile-----\n"); 
+//     for (i = 0; i < hashio->catchePosition; i++)
+//     {
+//         printf("i:%ld, key:%ld, delta:%d\n",i,hashio->catcheList[i].key,hashio->catcheList[i].delta[63]);
+//     }
+//     DeltaItem *zero = (DeltaItem*)malloc(sizeof(DeltaItem));
+//     pread(hashio->fdZero,zero,sizeof(DeltaItem),0);
+//     for (i = 0; i < 64; i++)
+//     {
+//         printf("key:%ld, i:%ld, delta:%d\n",zero->key,i,zero->delta[i]);
+//     }
+//     printf("----------file print end----------------\n");
+    // Data data1 = {};
+    // printf("-----------read     key:0  version:0\n");
+    // readData(hashio,hashlist,0,0,data1);
+    // printf("read data1 done\n");
+    // for (i = 0; i < 64; i++)
+    // {
+    //     printf("key:%ld, version:%ld, i:%ld, field:%ld\n",data1.key,data1.version,i,data1.field[i]);
+    // }
+    // printf("-----------read     key:0  version:0\n");
+    // Data data2 = {};
+    // readData(hashio,hashlist,0,100,data2);
+    // for (i = 0; i < 64; i++)
+    // {
+    //     printf("key:%ld, version:%ld, i:%ld, field:%ld\n",data2.key,data2.version,i,data2.field[i]);
+    // }
+    // printf("-----------read     key:60  version:10\n");
+    // Data data3 = {};
+    // readData(hashio,hashlist,60,10,data3);
+    // for (i = 0; i < 64; i++)
+    // {
+    //     printf("key:%ld, version:%ld, i:%ld, field:%ld\n",data3.key,data3.version,i,data3.field[i]);
+    // }
+    // printf("-----------read     key:15  version:100\n");
+    // Data data4 = {};
+    // readData(hashio,hashlist,25,100,data4);
+    // for (i = 0; i < 64; i++)
+    // {
+    //     printf("key:%ld, version:%ld, i:%ld, field:%ld\n",data4.key,data4.version,i,data4.field[i]);
+    // }
+      
     
     // uint64_t p1 = HashGetPosition(0);
     // uint64_t p2 = HashGetPosition(26);
