@@ -52,7 +52,7 @@ Dbio* initDbio(const char *dir)
     int fdIndex = createDoc(dir,"indexFile",DATA_FILE_SIZE*sizeof(IndexNode));
     dbio->indexList = (IndexNode*)createMap(fdIndex,DATA_FILE_SIZE*sizeof(IndexNode));
     dbio->indexPosition = 0;
-    dbio->fdZero = createDoc(dir,"zeroFile",sizeof(DeltaItem));
+    dbio->fdZero = createDoc(dir,"zeroFile",sizeof(DeltaItem)*VERSIONCOUNT);
     return dbio;
 }//done
 
@@ -68,14 +68,8 @@ bool writeIO(Dbio *dbio, const DeltaItem &deltaItem, uint64_t version)
     bool result = false;
     if((deltaItem.key == 0) && (version == 0))
     {
-        DeltaItem *tmp = (DeltaItem*)malloc(sizeof(DeltaItem));
-        // tmp->key = deltaItem.key;
-        // for (size_t i = 0; i < 64; i++)
-        // {
-        //     tmp->delta[i] = deltaItem.delta[i];
-        // } 
-        result = pwrite(dbio->fdZero,&deltaItem,sizeof(DeltaItem),0);
-        // free(tmp);
+        result = pwrite(dbio->fdZero,&deltaItem,sizeof(DeltaItem),dbio->zeroPosition);
+        dbio->zeroPosition += sizeof(DeltaItem);
         return result;
     }
     //write delta's key & version into indexfile
@@ -131,7 +125,7 @@ bool readIO(Dbio *dbio, uint64_t offset, DeltaItem *deltaItem)
     return result;
 }//done
 
-void readZero(Dbio *dbio,DeltaItem *deltaItem)
+void readZero(Dbio *dbio,DeltaItem *zeroList)
 {
-    pread(dbio->fdZero,deltaItem,sizeof(DeltaItem),0);
+    pread(dbio->fdZero,zeroList,sizeof(DeltaItem)*VERSIONCOUNT,0);
 }

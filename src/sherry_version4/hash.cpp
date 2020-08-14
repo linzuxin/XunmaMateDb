@@ -66,7 +66,7 @@ int getVersionCount(HashNode_64 *hashList, uint64_t index)
 bool hashInsertItem(HashNode_64 *hashList, uint64_t key, uint64_t version, uint64_t offset, uint64_t index)
 {
     bool result = false;
-    if(getVersionCount(hashList,index) == 64)
+    if(getVersionCount(hashList,index) == VERSIONCOUNT)
     {
         printf("HashData is full!\n");
     }
@@ -177,6 +177,9 @@ bool readData(Dbio *dbio, HashNode_64 *hashList,uint64_t key, uint64_t version, 
     DeltaItem *applyDelta = (DeltaItem*)malloc(sizeof(DeltaItem));
     DeltaItem *singleDelta = (DeltaItem*)malloc(sizeof(DeltaItem));
     uint64_t *applyList = (uint64_t*)malloc(sizeof(uint64_t)*VERSIONCOUNT);
+    memset(applyDelta,0,sizeof(DeltaItem));
+    memset(singleDelta,0,sizeof(DeltaItem));
+    memset(applyList,0,sizeof(uint64_t)*VERSIONCOUNT);
     int versionCount = hashSearch(hashList,key,version,applyList);
     if((versionCount == 0) && (key != 0 || version !=0));
     else
@@ -189,13 +192,19 @@ bool readData(Dbio *dbio, HashNode_64 *hashList,uint64_t key, uint64_t version, 
                 applyDelta->delta[j] += singleDelta->delta[j];
             }     
         }
-        if(key == 0)
+        if((key == 0) && (dbio->zeroPosition != 0))
         {
-            readZero(dbio,singleDelta);
-            for (i = 0; i < DATA_FIELD_NUM; i++)
+            DeltaItem *zeroList = (DeltaItem*)malloc(sizeof(DeltaItem)*VERSIONCOUNT);
+            memset(zeroList,0,sizeof(DeltaItem)*VERSIONCOUNT);
+            readZero(dbio,zeroList);
+            for (i = 0; i < VERSIONCOUNT; i++)
             {
-                applyDelta->delta[i] += singleDelta->delta[i]; 
-            } 
+                for (j = 0; j < DATA_FIELD_NUM; j++)
+                {
+                    applyDelta->delta[j] += zeroList[i].delta[j]; 
+                }
+            }
+            free(zeroList);
         }
         data.key = key;
         data.version = version;
@@ -205,5 +214,49 @@ bool readData(Dbio *dbio, HashNode_64 *hashList,uint64_t key, uint64_t version, 
         }
         result = true;      
     }
+    free(applyDelta);
+    free(singleDelta);
+    free(applyList);
     return result;
 }//done
+
+
+
+// int main(int argc, char *argv[])
+// {
+//     Dbio *dbio = initDbio("initIO");
+//     HashNode_64 *hash = hashInit();
+//     DeltaPacket zeroPacket = {};
+//     zeroPacket.version = 0;
+//     zeroPacket.delta_count = 10;
+//     for (size_t i = 0; i <  zeroPacket.delta_count; i++)
+//     {
+//         zeroPacket.deltas[i].key = 0;
+//         printf("packet index:%ld, key:%ld\n",i,zeroPacket.deltas[i].key);
+//         for (size_t j = 0; j < 64; j++)
+//         {
+//             zeroPacket.deltas[i].delta[j] = i;
+//             printf("delta key:%ld, delta index:%ld, delta:%d\n",zeroPacket.deltas[i].key,j,zeroPacket.deltas[i].delta[j]);
+//         }  
+//     }
+//     bool result = writeData(dbio,hash,zeroPacket);
+//     printf("result:%d\n",result);
+//     printf("----------zerolist------------\n");
+//     DeltaItem *zerolist = (DeltaItem*)mmap(NULL, sizeof(DeltaItem)*VERSIONCOUNT,  PROT_READ | PROT_WRITE, MAP_SHARED, dbio->fdZero, 0);
+//     for (size_t i = 0; i < VERSIONCOUNT; i++)
+//     {
+//         printf("i:%ld,key:%ld,delta:%d\n",i,zerolist[i].key,zerolist[i].delta[63]);
+//     }
+//     printf("----------zerolist2------------\n");
+//     DeltaItem *zerolist2 = (DeltaItem*)malloc(sizeof(DeltaItem)*VERSIONCOUNT);
+//     pread(dbio->fdZero,zerolist,sizeof(DeltaItem)*VERSIONCOUNT,0);
+//     for (size_t i = 0; i < VERSIONCOUNT; i++)
+//     {
+//         printf("i:%ld,key:%ld,delta:%d\n",i,zerolist[i].key,zerolist[i].delta[63]);
+//     }
+
+    
+
+    
+
+// }

@@ -29,6 +29,7 @@ typedef struct Dbio
     uint64_t indexPosition = 0;
     //zero's mmap header
     int fdZero;
+    uint64_t zeroPosition = 0;
 }Dbio;
 
 int createDir(const char *dir);
@@ -38,4 +39,4 @@ Dbio* initDbio(const char *dir);
 void recoverDbioIndex(Dbio* dbio, uint64_t indexPosition);
 bool writeIO(Dbio *dbio, const DeltaItem &deltaItem, uint64_t version);
 bool readIO(Dbio *dbio, uint64_t offset, DeltaItem *deltaItem);
-void readZero(Dbio *dbio,DeltaItem *deltaItem);
+void readZero(Dbio *dbio,DeltaItem *zeroList);
