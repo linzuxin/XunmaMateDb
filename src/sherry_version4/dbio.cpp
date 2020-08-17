@@ -63,7 +63,7 @@ void recoverDbioIndex(Dbio* dbio, uint64_t indexPosition)
     dbio->deltaPosition = (indexPosition - dbio->catchePosition) * sizeof(DeltaItem);
     int zeroCount = 0;
     pread(dbio->fdZero,&zeroCount,sizeof(int),sizeof(DeltaItem)*VERSIONCOUNT);
-    dbio->zeroPosition = zeroCount*zeroCount;
+    dbio->zeroPosition = zeroCount*sizeof(DeltaItem);
 }
 
 bool writeIO(Dbio *dbio, const DeltaItem &deltaItem, uint64_t version)
