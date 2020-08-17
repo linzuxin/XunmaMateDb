@@ -7,10 +7,9 @@ HashNode_64* hashInit()
     return hashList;
 }//done
 
-uint64_t hashRecover(Dbio *dbio)
+uint64_t hashRecover(Dbio *dbio, HashNode_64 *hashList)
 {
     uint64_t i = 0;
-    HashNode_64 *hashList = hashInit();
     while ((dbio->indexList[i].key != 0) || (dbio->indexList[i].version != 0))
     {
         hashInsert(hashList, dbio->indexList[i].key, dbio->indexList[i].version, i);

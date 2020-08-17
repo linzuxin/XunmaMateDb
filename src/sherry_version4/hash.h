@@ -21,7 +21,7 @@ typedef struct HashNode_64
 }HashNode_64;
 
 HashNode_64* hashInit();
-uint64_t hashRecover(Dbio *dbio);
+uint64_t hashRecover(Dbio *dbio,HashNode_64 *hashList);
 uint64_t HashGetPosition(uint64_t key);
 uint64_t getHashIndex(HashNode_64 *hashList, uint64_t key);
 int getVersionCount(HashNode_64 *hashList, uint64_t index);
